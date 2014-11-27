@@ -13,9 +13,10 @@ port=6667
 botname="Bot5262"
 chan="#DevBukkit"
 password="macaroni"
+filename="id_login"
 
 try:
-    with open("id","rb") as file:
+    with open(filename,"rb") as file:
         MonPick = pickle.Unpickler(file)
         id = MonPick.load()
 except FileNotFoundError:
@@ -117,7 +118,7 @@ class Bot(threading.Thread):
 
                 elif linex[1] == "MODE" and linex[2] == chan:
                     id[linex[4],"mode"] = linex[3]
-                    with open("id","wb") as file:
+                    with open(filename,"wb") as file:
                         mp = pickle.Pickler(file)
                         mp.dump(id)
                 
@@ -155,14 +156,14 @@ class Bot(threading.Thread):
                                     id[sender,"mode"] = ""
                                 print(sender + " is now registered")
                                 sendmsg(chan, sender + " is now registered")
-                                with open("id","wb") as file:
+                                with open(filename,"wb") as file:
                                     mp = pickle.Pickler(file)
                                     mp.dump(id)
                         elif linex[3].lower() == ":changepwd" and len(linex)>5:
                             if id[sender,"password"] == hashlib.sha1((linex[4]).encode()).hexdigest():
                                 id[sender,"password"] = hashlib.sha1((linex[5]).encode()).hexdigest()
                                 sendmsg(sender, "Password changed !")
-                                with open("id","wb") as file:
+                                with open(filename,"wb") as file:
                                     mp = pickle.Pickler(file)
                                     mp.dump(id)
                             else:
