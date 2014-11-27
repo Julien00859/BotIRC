@@ -16,15 +16,22 @@ password="macaroni"
 filename="id_login"
 
 try:
-    with open(filename,"rb") as file:
-        MonPick = pickle.Unpickler(file)
+    with open(filename,"rb") as myFile:
+        MonPick = pickle.Unpickler(myFile)
         id = MonPick.load()
 except FileNotFoundError:
     id={}
 
+#Ajouter l'heure
+def log(msg):
+    print(msg)
+    with open("log.txt","a") as myFile:
+        myFile.write(str(msg) + "\n")
+
+
 def sendmsg(user, msg):
     irc.send(("PRIVMSG " + user + " " + msg + "\r\n").encode("UTF-8"))
-    print(user +" " + botname + ":" + msg)
+    log(user +" " + botname + ":" + msg)
 
 def fcommand(linex, i):
     command = str()
@@ -80,7 +87,7 @@ class ShoutBox(threading.Thread):
                                             sendmsg(chan, message)
 
             else:
-                print("Warning ! " + str(main.status_code))
+                log("Warning ! " + str(main.status_code))
             b=True
             time.sleep(3)
 
@@ -112,7 +119,7 @@ class Bot(threading.Thread):
                     if isConnected == False:
                         isConnected = True
                         irc.send(("JOIN " + chan + "\r\n").encode("UTF-8"))
-                        print("Pong ! %s joined %s and is ready to receive commands !\n" % (botname, chan) )
+                        log("Pong ! %s joined %s and is ready to receive commands !\n" % (botname, chan) )
                         
 
 
@@ -125,7 +132,7 @@ class Bot(threading.Thread):
                 elif len(linex) > 3 and linex[1] == "PRIVMSG":
                     sender = fsender(linex[0])
                     if linex[2] == chan:
-                        print(linex[2] + " " + sender + fcommand(linex, 3))
+                        log(linex[2] + " " + sender + fcommand(linex, 3))
 
                         if linex[3].lower() == ":.ping":
                             sendmsg(chan, "Pong ! " + fcommand(linex, 4))
@@ -154,7 +161,7 @@ class Bot(threading.Thread):
                                 except KeyError:
                                     sendmsg(sender, "You don't have any group set.")
                                     id[sender,"mode"] = ""
-                                print(sender + " is now registered")
+                                log(sender + " is now registered")
                                 sendmsg(chan, sender + " is now registered")
                                 with open(filename,"wb") as file:
                                     mp = pickle.Pickler(file)
@@ -170,7 +177,7 @@ class Bot(threading.Thread):
                                 sendmsg(sender, "Wrong password !")
                                 
                         elif linex[3] == ":" + password:
-                            print(linex)
+                            log(linex)
                             
                             if linex[4].lower() == "tell":
                                 sendmsg(chan, fcommand(linex, 5))                            
@@ -183,19 +190,19 @@ class Bot(threading.Thread):
                                     print("\nStopped ! Press any key to quit.")
                                     self._stop.set()
                         else:
-                            print(linex[2] + " " + sender + fcommand(linex, 3))
+                            log(linex[2] + " " + sender + fcommand(linex, 3))
 
 irc = socket.socket()
-print("Establishing connection to %s:%i" % (server, port))
+log("Establishing connection to %s:%i" % (server, port))
 irc.connect((server, port))
 
 irc.recv(1024).decode()
-print("Connection established !")
+log("Connection established !")
 
-print("Connecting %s..." % botname)
+log("Connecting %s..." % botname)
 irc.send(("USER %s %s %s: Bot \r\n" % (botname, botname, botname)).encode("UTF-8"))
 irc.send(("NICK " + botname + "\r\n").encode("UTF-8"))
-print("Connected ! Waiting server ping to join " + chan + "...")
+log("Connected ! Waiting server ping to join " + chan + "...")
 
 MonBot = Bot()
 MonBot.start()
