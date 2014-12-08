@@ -6,14 +6,16 @@ class traduction:
 		with open(file, "r") as json_lang:
 			self.lang = json.load(json_lang)
 
-def log(msg, status="INFO", doIprint=True):
+def log(msg, status="INFO", doIprint=True, doIsave=True):
 	"""msg = message to log; file = file where put the message; status = string that will be between []"""
 	mytime = time.strftime("%d/%m/%y %H:%M:%S")
 	message = mytime + " [" + str(status) + "] " + str(msg)
-	if doIprint == True:
+	if doIprint:
 		print(message)
-	with open("log.txt", "a") as f:
-		f.write(message + "\r\n")
+
+	if doIsave:
+		with open("log.txt", "a") as f:
+			f.write(message + "\r\n")
 	return message
 
 def ask(q, t):
@@ -31,5 +33,5 @@ def ask(q, t):
 		if type(r) == type(t):
 			break
 		else:
-			log(trad.lang["Ask"]["TypeError"]["YouGiveMe"] + str(type(r)) + trad.lang["Ask"]["TypeError"]["ButINeed"] + str(type(t)), "ERROR")
+			log(trad.lang["Ask"]["TypeError"]["YouGiveMe"] % (type(r), type(t)), "ERROR")
 	return r

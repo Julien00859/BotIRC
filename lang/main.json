@@ -6,10 +6,10 @@
 		"Port":"Port: ",
 		"Botname":"Botname: ",
 		"Channel":"Channel #%i (leave it empty if no more): ",
-		"Password":"Password for admins commands",
+		"Password":"Password for admins commands: ",
 		"Establishing":"Establishing connection to %s:%i",
 		"Established":"Connection established !",
 		"Connecting":"Connecting %s...",
-		"Connected":"Connected ! Waiting server ping to join %s..."
+		"WaitPing":"Waiting server ping to join %s..."
 	}
 }
