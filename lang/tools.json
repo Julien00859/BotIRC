@@ -1,0 +1,8 @@
+{
+	"Ask":{
+		"TypeError":{
+			"YouGiveMe":"Tu m'as donné un ",
+			"ButINeed":" mais j'ai besoin d'un "
+		}
+	}
+}
