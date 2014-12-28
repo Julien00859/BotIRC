@@ -1,15 +1,22 @@
 {
-	"Core":{
+	"Connection":{
 		"NoConfigurationFileFound":"No configuration file found",
 		"MakeANewConfiguration":"Let's make a new configuration together :D",
 		"Host":"Host: ",
 		"Port":"Port: ",
 		"Botname":"Botname: ",
 		"Channel":"Channel #%i (leave it empty if no more): ",
-		"Password":"Password for admins commands: ",
+		"Shoutbox":"This channel is linked to a shoutbox ? (True/False) ",
+		"Password":"OPER password (you need to configure your IRC that way: \"OPER Bot {}\"): ",
 		"Establishing":"Establishing connection to %s:%i",
 		"Established":"Connection established !",
 		"Connecting":"Connecting %s...",
 		"WaitPing":"Waiting server ping to join %s..."
+	},
+	"Bot":{
+		"Quit":"Have to go ! My planet needs me !!!",
+		"PermissionDenied":"Permission Denied",
+		"Mode":"The user \"%s\" has the mode: %s",
+		"ModeCommandUsage":"Usage: /msg %s auth <password>"
 	}
 }
