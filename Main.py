@@ -1,10 +1,7 @@
 import socket
-import sys
 import hashlib
 import json
 import tools
-import os
-import pickle
 
 def SendCommand(command):
 	"""Send a command on the IRC serveur"""
