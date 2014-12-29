@@ -1,0 +1,7 @@
+{
+	"Ask":{
+		"TypeError":{
+			"YouGiveMe":"Tu m'as donné un %s mais j'ai besoin d'un %s"
+		}
+	}
+}
