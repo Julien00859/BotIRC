@@ -1,5 +1,6 @@
 {
 	"Connection":{
+		"LoadConf":"Loading configuration file.",
 		"NoConfigurationFileFound":"No configuration file found",
 		"MakeANewConfiguration":"Let's make a new configuration together :D",
 		"Host":"Host: ",
@@ -14,6 +15,7 @@
 		"WaitPing":"Waiting server ping to join %s..."
 	},
 	"Bot":{
+		"NewUserHelloMessage":"Hello %s",
 		"Quit":"Have to go ! My planet needs me !!!",
 		"PermissionDenied":"Permission Denied",
 		"Mode":"The user \"%s\" has the mode: %s",

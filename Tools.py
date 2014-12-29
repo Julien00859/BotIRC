@@ -2,6 +2,11 @@ import time
 import json
 
 class traduction:
+	"""Message are stored in json: {"msg":{"Hello":"Salut"}}, we convert it into Python's dict and store into self.lang.
+	   For instance, to translate "Hello" all you have to do is:
+	   trad = tools.traduction(lang.json)
+	   trad.lang["msg"]["Hello"]"""
+
 	def __init__(self, file):
 		with open(file, "r") as json_lang:
 			self.lang = json.load(json_lang)
@@ -20,14 +25,30 @@ def log(msg, status="INFO", doIprint=True, doIsave=True):
 	return message
 
 def ask(q, t):
+	"""Ask a question to the user, it's answer have to be the same type as the
+	   type of (t) otherwise we ask him again."""
+
+	#Traduction powa ^^
 	trad = traduction("lang/tools.json")
+
+	#Questions and replies are not printed on the screen as the user see well what
+	#He is doing with the input(). But Questions and Replies are saved in the log file
 	log(q, "QUESTION", False)
 	while True:
 		r = input(q)
 		log(r, "REPLY", False)
+
+		#His reply is an str(), if the type of t isn't a str() too, we try to convert
+		#his reply in the type wanted, finaly if the reply type is the same type as the t type
+		#we return this converted reply. Otherwise... LOOP :D
 		if type(t) == type(int()):
 			try:
 				r = int(r)
+			except:
+				pass
+		elif type(t) == type(bool()):
+			try:
+				r = bool(r)
 			except:
 				pass
 
@@ -61,6 +82,12 @@ class ProgressBar:
                 print("%3d%% [%20s] Finish in: %s" % (self.value/self.maxval*100,"<" + self._QBString("=", self.value/self.maxval*20),time.strftime("%Mm %Ss", time.localtime((time.time()-self.started)/self.value*(self.maxval-self.value)))),end="\r" )
                 
 def BeautifulJSON(json):
+	#Just change {"Plouf":{"Lol":"MDR"}} to:
+	#{
+	#	"Plouf":{
+	#		"Lol":"MDR"
+	#	}
+	#}
     array = list()
     for l in json:
         array.append(l)
