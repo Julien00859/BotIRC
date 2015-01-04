@@ -117,6 +117,9 @@ except IOError:
 		f.write(json.dumps(data))
 	del Host, Port, Botname, Channels, Password
 
+tools.log(trad.lang["Connection"]["LoadPlugin"])
+
+
 #That will be a plugin soon ^^
 tools.log("Loading authentification file.")
 try:
@@ -210,6 +213,7 @@ while running:
 						auth[channel][GetNameWithoutPrefix(client)]
 					except KeyError:
 						tools.log("+" + GetNameWithoutPrefix(client))
+						auth[linex[4]] = {}
 						auth[linex[4]][GetNameWithoutPrefix(client)] = []
 
 					#Says Hello to new user
