@@ -117,8 +117,6 @@ except IOError:
 		f.write(json.dumps(data))
 	del Host, Port, Botname, Channels, Password
 
-tools.log(trad.lang["Connection"]["LoadPlugin"])
-
 
 #That will be a plugin soon ^^
 tools.log("Loading authentification file.")
