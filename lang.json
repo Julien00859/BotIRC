@@ -1,0 +1,27 @@
+{
+	"Main":{
+		"Load":{
+			"LoadConf":"Loading Configuration",
+			"NoConfFileFound":"No configuration file found !",
+			"Host":"Host address ?",
+			"Port":"Port number ?",
+			"IRCPassword":"Password (leave it empty if none) ? ",
+			"OperPassword":"Oper Password (leave it empty if none) ?",
+			"Botname":"Bot name ?",
+			"Channel":"Channel #%i (leave it empty if no more) ?",
+			"ConfSaved":"Configuration successfully saved !",
+			"ConfLoaded":"Configuration successfully loaded !"
+		},
+		"Connection":{
+			"Server":"Establishing connexion to %s:%i",
+			"Bot":"Connection established, sending IRC connections command",
+			"Ping":"Informations send, waiting server ping to join channels",
+			"Channels":"Ping ! Joining %s"
+		}
+	},
+	"Tools":{
+		"Ask":{
+			"YouGiveMe":"You give me %s but I need %s !"
+		}
+	}
+}
