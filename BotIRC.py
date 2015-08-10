@@ -76,7 +76,7 @@ class server(Thread):
 
 						if line.count("PRIVMSG " + self.config["name"]) == 0:
 							if line.endswith("\n"):
-								print(line[:-1])
+								print(line,end="")
 							else:
 								print(line)
 
@@ -102,7 +102,7 @@ class server(Thread):
 												self.auth[sender]["channels-op"] = self.users[sender]["channels"].copy()
 												self.send("PRIVMSG {0} Le compte {0} a été enregistré avec le mot de passe {1}. Ce hash sera recalculé à chaque connexion permettant ainsi la protection de vos données.".format(sender, sha256(args[4].encode()).hexdigest()))
 											else:
-												self.send("PRIVMSG {} ERREUR: Le mot de passe doit être compris entre 8 et 20 caractère et être constitué uniquement de chiffre et de lettre")
+												self.send("PRIVMSG {} ERREUR: Le mot de passe doit être compris entre 8 et 20 caractère et être constitué uniquement de chiffre et de lettre".format(sender))
 										else:
 											self.send("PRIVMSG {} ERREUR: Vous devez entrer un mot de passe".format(sender))
 									else:
