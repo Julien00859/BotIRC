@@ -111,7 +111,11 @@ class server(Thread):
 									if sender in self.auth:
 										if len(args) >= 5:
 											if self.auth[sender]["password"] == sha256(args[4].encode()).hexdigest():
-												self.users[sender]["Authentificated"] = True
+												if sender in self.users:
+													self.users[sender]["Authentificated"] = True
+												else:
+													self.users[sender] = {"Authentificated":True, "channels":[]}
+
 												self.send("PRIVMSG {} Vous êtes maintenant connecté".format(sender))
 												if "fail" in self.auth[sender]:
 													for user in self.auth[sender]["fail"]:
