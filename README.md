@@ -28,3 +28,4 @@ Ne sont pas sauvegardés les données suivantes:
 - `register <mot de passe>`: permet de d'enregistrer le nickname de l'utilisateur
 - `login <mot de passe>`: permet d'authentifier le nickname de l'utilisateur
 - `islogged <nickname>`: permet de savoir si l'utilisateur est authentifié ou non
+- `about`: donne un lien vers cette page
