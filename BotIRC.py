@@ -218,4 +218,7 @@ while True:
 		Bot.stop()
 		break
 	else:
-		eval(msg)
+		try:
+			eval(msg)
+		except Exception as ex:
+			print(ex)
