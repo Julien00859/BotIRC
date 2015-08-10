@@ -1,14 +1,10 @@
 {
-	"host":"192.168.1.60",
+	"host":"localhost",
 	"port":6667,
 	"name":"Belzebot",
 	"server_password":"",
-	"oper_password":"secret",
-	"channels":[
-		"#Dev",
-		"#Home",
-		"#BakaConnect"
-	],
+	"oper_password":"",
+	"channels":[],
 	"auth_fail":[
 		"",
 		"",
