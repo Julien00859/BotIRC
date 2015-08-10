@@ -149,7 +149,7 @@ class server(Thread):
 														else:
 															if self.config["auth_fail"][len(self.config["auth_fail"])-1]:
 																self.send(self.config["auth_fail"][len(self.config["auth_fail"])-1].format(host=host, user=user, nick=sender))
-												self.send("PRIVMSG {} ERREUR: Le mot de passe est incorrecte (Tentative #{})".format(self.auth[sender]["fail"][user+"@"+host]))
+												self.send("PRIVMSG {} ERREUR: Le mot de passe est incorrecte (Tentative #{})".format(sender, self.auth[sender]["fail"][user+"@"+host]))
 										else:
 											self.send("PRIVMSG {} ERREUR: Vous devez entrer un mot de passe".format(sender))
 									else:
