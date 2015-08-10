@@ -136,7 +136,7 @@ class server(Thread):
 												user = args[0][args[0].find("!")+1:args[0].find("@")]
 												host = args[0][args[0].find("@")+1:]
 
-												if not "fail" in self.auth(sender):
+												if not "fail" in self.auth[sender]:
 													self.auth.fail[user+"@"+host] = 1
 												else:
 													self.auth.fail[user+"@"+host] += 1
