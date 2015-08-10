@@ -183,7 +183,7 @@ class server(Thread):
 						elif len(args) >= 3 and args[1] == "JOIN" and line[1:line.find("!")] != self.config["name"]:
 							sender = line[1:line.find("!")]
 							if sender not in self.users:
-								self.users[sender] = {"Authentificated":False, "channels":args[2][1:].split(",")}
+								self.users[sender] = {"Authentificated":False, "channels":[]}
 
 							if self.users[sender]["Authentificated"] == True:
 								for channel in args[2][1:].split(","):
