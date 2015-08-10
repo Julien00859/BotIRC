@@ -64,12 +64,13 @@ class server(Thread):
 			rlist, wlist, xlist = select([self.server], [], [], 0.1)
 			if rlist:
 				message = self.server.recv(1024).decode()
-				if message.count("PRIVMSG " + self.config["name"]) == 0:
-					print(message[:-1])
 
 				lines = message.split("\r\n")
 				for line in lines:
 					args = line.split(" ")
+
+					if line.count("PRIVMSG " + self.config["name"]) == 0:
+						print(line[:-1])
 
 					#Ping
 					if len(args) >= 1 and args[0] == "PING":
@@ -82,8 +83,9 @@ class server(Thread):
 						#PrivateMessage
 						if args[2] == self.config["name"]:
 
-							#Register
+							#register <password>
 							if args[3][1:].lower() == "register":
+								print(" ".join(args[0:4]))
 								if sender not in self.auth:
 									if len(args) >= 5:
 										if 20 >= len(args[4]) >= 8 and set(args[4]) <= set(string.ascii_lowercase + string.digits + '.'):
@@ -98,8 +100,9 @@ class server(Thread):
 								else:
 									self.send("PRIVMSG {} ERRER: Vous êtes déjà enregistré. Merci de vous connecter via la commande /msg {} login votre_mot_de_passe".format(sender, self.config["name"]))
 
-							#Login
+							#Login <password>
 							elif args[3][1:].lower() == "login":
+								print(" ".join(args[0:4]))
 								if sender in self.auth:
 									if len(args) >= 5:
 										if self.auth[sender]["password"] == sha256(args[4].encode()).hexdigest():
@@ -136,15 +139,23 @@ class server(Thread):
 								else:
 									self.send("PRIVMSG {} ERRER: Vous n'est pas encore enregistré. Merci de vous enregistrer via la commande /msg {} register votre_mot_de_passe".format(sender, self.config["name"]))
 							
-							#islogged
+							#islogged <nick>
 							elif args[3][1:].lower() == "islogged":
+								print(line[:-1])
 								if len(args) >= 5 and args[4] in self.users and self.users[args[4]]["Authentificated"] == True:
-									self.send("PRIVMSG {} {} est authentifié")
+									self.send("PRIVMSG {} {} est authentifié".format(sender, args[4]))
 								else:
-									self.send("PRIVMSG {} {} n'est pas authentifié")
+									self.send("PRIVMSG {} {} n'est pas authentifié".format(sender, args[4]))
 
+							elif args[3][1:].lower() == "about":
+								msg = "# {} - IRC Bot #".format(self.config["name"])
+								self.send("PRIVMSG {} {}".format(sender, "".join(["#" for char in msg])))
+								self.send(msg)
+								self.send("PRIVMSG {} {}".format(sender, "".join(["#" for char in msg])))
+								self.send("PRIVMSG {} {} est un bot (programme) développé par Julien Castiaux (Julien008) pour le réseau IRC de la BakaConnect.".format(sender, self.config["name"]))
+								self.send("PRIVMSG {} README complet: https://github.com/Julien00859/Bot_IRC/blob/master/README.md".format(sender))
 							else:
-								pass
+								line[:-1]
 
 						#PublicMessage
 						else:
