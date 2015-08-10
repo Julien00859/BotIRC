@@ -181,7 +181,7 @@ class server(Thread):
 
 							if self.users[sender]["Authentificated"] == True:
 								for channel in args[2][1:].split(","):
-									if channel in self.auth[sender]["channels"]:
+									if channel in self.auth[sender]["channels-op"]:
 										self.send("MODE {} +o {}".format(channel, sender))
 									else:
 										self.send("MODE {} +v {}".format(channel, sender))
