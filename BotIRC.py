@@ -75,7 +75,10 @@ class server(Thread):
 						args = line.split(" ")
 
 						if line.count("PRIVMSG " + self.config["name"]) == 0:
-							print(line[:-1])
+							if line.endswith("\n"):
+								print(line[:-1])
+							else:
+								print(line)
 
 						#Ping
 						if len(args) >= 1 and args[0] == "PING":
