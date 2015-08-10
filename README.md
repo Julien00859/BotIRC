@@ -25,13 +25,6 @@ Ne sont pas sauvegardés les données suivantes:
 
 ## Commandes disponible
 
-Commandes users:
-
 - `register <mot de passe>`: permet de d'enregistrer le nickname de l'utilisateur
 - `login <mot de passe>`: permet d'authentifier le nickname de l'utilisateur
 - `islogged <nickname>`: permet de savoir si l'utilisateur est authentifié ou non
-
-Commandes opers (nécessite d'être OP sur le channel donné):
-
-- `op <chan> <nickname>`: donne le statut d'opérateur sur le channel donné à l'utilisateur donné
-- `deop <chan> <nickname>`: retire le statut d'opérateur sur le channel donné à l'utilisateur donné
