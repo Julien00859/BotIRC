@@ -51,8 +51,8 @@ class server(Thread):
 				if user.startswith("@"):
 					self.users[nick]["channels"].append(names.split(" ")[4])
 					if nick in self.auth:
-						if names.split(" ")[4] not in self.auth[nick]["channels"]:
-							self.auth[nick]["channels"].append(names.split(" ")[4])
+						if names.split(" ")[4] not in self.auth[nick]["channels-op"]:
+							self.auth[nick]["channels-op"].append(names.split(" ")[4])
 
 		for channel in self.config["channels"]:
 			self.send("SAMode {} +o {}".format(channel, self.config["name"]))
@@ -65,7 +65,7 @@ class server(Thread):
 			if rlist:
 				try:
 					message = self.server.recv(1024).decode()
-					
+
 				except Exception as ex:
 					print("ex")
 
