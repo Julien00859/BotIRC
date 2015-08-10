@@ -125,7 +125,7 @@ class server(Thread):
 												self.send("PRIVMSG {} Vous êtes maintenant connecté".format(sender))
 												if "fail" in self.auth[sender]:
 													for user in self.auth[sender]["fail"]:
-														self.server.send("PRIVMSG {} {} a tenté de se connecter {} fois sur votre compte".format(sender, user, self.auth[sender]["fail"][user]))
+														self.send("PRIVMSG {} {} a tenté de se connecter {} fois sur votre compte".format(sender, user, self.auth[sender]["fail"][user]))
 														del self.auth.fail[user]
 												for channel in self.config["channels"]:
 													if channel in self.auth[sender]["channels-op"]:
@@ -144,11 +144,13 @@ class server(Thread):
 
 													if host != "localhost" and host != "127.0.0.1":
 														if len(self.config["auth_fail"]) > self.auth[sender]["fail"][user+"@"+host]:
-															if self.config["auth_fail"][self.auth[sender]["fail"][user+"@"+host]]:
+															if self.config["auth_fail"][self.auth[sender]["fail"][user+"@"+host]-1]:
 																self.send(self.config["auth_fail"][self.auth[sender]["fail"][user+"@"+host]].format(host=host, user=user, nick=sender))
 														else:
 															if self.config["auth_fail"][len(self.config["auth_fail"])-1]:
 																self.send(self.config["auth_fail"][len(self.config["auth_fail"])-1].format(host=host, user=user, nick=sender))
+													elif user == "webchat":
+														self.send("KILL {nick} Mot de passe incorrecte sur l'interface web".format(host=host, user=user, nick=sender))
 												self.send("PRIVMSG {} ERREUR: Le mot de passe est incorrecte (Tentative #{})".format(sender, self.auth[sender]["fail"][user+"@"+host]))
 										else:
 											self.send("PRIVMSG {} ERREUR: Vous devez entrer un mot de passe".format(sender))
