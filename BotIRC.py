@@ -102,7 +102,7 @@ class server(Thread):
 												self.auth[sender]["channels-op"] = self.users[sender]["channels"].copy()
 												self.send("PRIVMSG {0} Le compte {0} a été enregistré avec le mot de passe {1}. Ce hash sera recalculé à chaque connexion permettant ainsi la protection de vos données.".format(sender, sha256(args[4].encode()).hexdigest()))
 												self.send("PRIVMSG {} Vous êtes maintenant connecté".format(sender))
-												for channel in self.user[sender]["channels"]:
+												for channel in self.users[sender]["channels"]:
 													self.send("MODE {} +v {}".format(channel, sender))
 											else:
 												self.send("PRIVMSG {} ERREUR: Le mot de passe doit être compris entre 8 et 20 caractère et être constitué uniquement de chiffre et de lettre".format(sender))
