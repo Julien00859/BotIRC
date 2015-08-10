@@ -18,7 +18,6 @@ class server(Thread):
 
 	def send(self, cmd):
 		print(">>> " + cmd)
-		print(">>> " + cmd, file="server.log")
 		self.server.send((cmd + "\r\n").encode("UTF-8"))
 
 	def run(self):
@@ -67,7 +66,6 @@ class server(Thread):
 				message = self.server.recv(1024).decode()
 				if message.count("PRIVMSG " + self.config["name"]) == 0:
 					print(message[:-1])
-					print(message[:-1], file="server.log")
 
 				lines = message.split("\r\n")
 				for line in lines:
@@ -150,7 +148,7 @@ class server(Thread):
 
 						#PublicMessage
 						else:
-							print(line, file="messages.log")
+							pass
 
 					#Join
 					elif len(args) >= 3 and args[1] == "JOIN" and line[1:line.find("!")] != self.config["name"]:
