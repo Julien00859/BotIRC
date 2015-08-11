@@ -217,7 +217,8 @@ class server(Thread):
 
 						#Quit
 						elif len(args) >= 2 and args[1] == "QUIT":
-							del self.users[line[1:line.find("!")]]
+							if line[1:line.find("!")]in self.users:
+								del self.users[line[1:line.find("!")]]
 
 	def save(self):
 		with open("auth.json","w") as file:
