@@ -15,7 +15,7 @@ class server(Thread):
 		self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.config = json.load(open("config.json","r"))
 		self.auth = json.load(open("auth.json","r"))
-		self.users = {} #{Julien008:channels:{#Dev:{mode:+o}}}
+		self.users = {}
 		Thread.__init__(self)
 
 	def log(self, msg):
@@ -222,6 +222,9 @@ class server(Thread):
 	def save(self):
 		with open("auth.json","w") as file:
 			file.write(json.dumps(self.auth, indent="\t", sort_keys=True))
+
+	def reload(self):
+		self.auth = json.load(open("auth.json","r"))
 
 	def stop(self):
 		self.send("QUIT :Le vaisseau mère a besoin de moi !")
