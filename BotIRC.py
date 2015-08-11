@@ -8,7 +8,7 @@ import json
 import os
 import string
 import urllib.request
-from BeautifulSoup4 import BeautifulSoup
+from bs4 import BeautifulSoup
 
 class server(Thread):
 	def __init__(self):
