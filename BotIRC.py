@@ -160,8 +160,8 @@ class server(Thread):
 															if self.config["auth_fail"][len(self.config["auth_fail"])-1]:
 																self.send(self.config["auth_fail"][len(self.config["auth_fail"])-1].format(host=host, user=user, nick=sender))
 													elif user == "webchat":
-														self.send("KILL {nick} Mot de passe incorrecte sur l'interface web".format(host=host, user=user, nick=sender))
-												self.send("PRIVMSG {} ERREUR: Le mot de passe est incorrecte (Tentative #{})".format(sender, self.auth[sender]["fail"][user+"@"+host]))
+														self.send("KILL {nick} Mot de passe incorrect sur l'interface web".format(host=host, user=user, nick=sender))
+												self.send("PRIVMSG {} ERREUR: Le mot de passe est incorrect (Tentative #{})".format(sender, self.auth[sender]["fail"][user+"@"+host]))
 										else:
 											self.send("PRIVMSG {} ERREUR: Vous devez entrer un mot de passe".format(sender))
 									else:

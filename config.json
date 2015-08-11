@@ -1,18 +1,20 @@
 {
 	"host":"localhost",
 	"port":6667,
-	"name":"Belzebot",
+	"name":"MisterSmith",
 	"server_password":"",
 	"oper_password":"",
-	"channels":[],
+	"channels":[
+		"#Channel"
+	],
 	"auth_fail":[
 		"",
 		"",
 		"WALLOPS {nick}!{user}@{host} s'est trompé de mot de passe {fail} fois",
-		"KILL {nick} Mot de passe incorrecte",
-		"KLINE {user}@{host} 10m :Mot de passe incorrecte",
-		"KLINE {user}@{host} 1h :Mot de passe incorrecte",
-		"KLINE {user}@{host} 1d :Mot de passe incorrecte",
-		"KLINE {user}@{host} :Mot de passe incorrecte"
+		"KILL {nick} Mot de passe incorrect",
+		"KLINE {user}@{host} 10m :Mot de passe incorrect",
+		"KLINE {user}@{host} 1h :Mot de passe incorrect",
+		"KLINE {user}@{host} 1d :Mot de passe incorrect",
+		"KLINE {user}@{host} :Mot de passe incorrect"
 	]
 }
