@@ -48,7 +48,7 @@ class server(Thread):
 		for channel in self.config["channels"]:
 			self.send("JOIN " + channel)
 			names = self.server.recv(1024).decode()
-			self.log([names for names in names.split("\r\n")])
+			[self.log(names) for names in names.split("\r\n")]
 
 			names = names.split("\r\n")[1]
 			for user in names.replace(":","").split(" ")[5:len(names.split(" "))]:
