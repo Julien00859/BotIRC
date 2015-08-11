@@ -8,7 +8,7 @@ import json
 import os
 import string
 import urllib.request
-from bs4 import BeautifulSoup as bs
+from BeautifulSoup4 import BeautifulSoup
 
 class server(Thread):
 	def __init__(self):
@@ -184,15 +184,15 @@ class server(Thread):
 											self.users[sender] = {"Authentificated":False, "channels":[]}
 										if "LymOS" not in self.users[sender]:
 											self.users[sender]["LymOS"] = {}
-											content = bs(urllib.request.urlopen("http://system.lymdun.fr/ls/index.php").read().decode())
+											content = BeautifulSoup(urllib.request.urlopen("http://system.lymdun.fr/ls/index.php", "html.parser").read().decode())
 											for t in ["var", "vartemp", "cerveau", "vraiesvars", "nom", "noreut", "vraiesvars", "rappel"]:
 												self.users[sender]["LymOS"][t] = content.find(id=t)["value"]
 											
 										self.users[sender]["LymOS"]["usersay"] = " ".join(args[3:len(args)])
-										content = bs(urllib.request.urlopen("http://system.lymdun.fr/ls/index.php", data=urllib.parse.urlencode(self.users[sender]["LymOS"]).encode()).read().decode())
+										content = BeautifulSoup(urllib.request.urlopen("http://system.lymdun.fr/ls/index.php", data=urllib.parse.urlencode(self.users[sender]["LymOS"]).encode()).read().decode(), "html.parser")
 										for t in ["var", "vartemp", "cerveau", "vraiesvars", "nom", "noreut", "vraiesvars", "rappel"]:
 											self.users[sender]["LymOS"][t] = content.find(id=t)["value"]
-											
+
 										self.send("PRIVMSG {} {}".format(sender, content.find(id="reponse_ia").getText()))
 
 							#PublicMessage
