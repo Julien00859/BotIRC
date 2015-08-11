@@ -184,7 +184,7 @@ class server(Thread):
 											self.users[sender] = {"Authentificated":False, "channels":[]}
 										if "LymOS" not in self.users[sender]:
 											self.users[sender]["LymOS"] = {}
-											content = BeautifulSoup(urllib.request.urlopen("http://system.lymdun.fr/ls/index.php", "html.parser").read().decode())
+											content = BeautifulSoup(urllib.request.urlopen("http://system.lymdun.fr/ls/index.php").read().decode(), "html.parser")
 											for t in ["var", "vartemp", "cerveau", "vraiesvars", "nom", "noreut", "vraiesvars", "rappel"]:
 												self.users[sender]["LymOS"][t] = content.find(id=t)["value"]
 											
