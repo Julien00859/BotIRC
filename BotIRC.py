@@ -9,7 +9,7 @@ import string
 from threading import Thread
 import time
 import urllib.request
- 
+
 class server(Thread):
 	def __init__(self):
 		self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -104,7 +104,7 @@ class server(Thread):
 									self.log(" ".join(args[0:4]))
 									if sender not in self.auth:
 										if len(args) >= 5:
-											if 20 >= len(args[4]) >= 8 and set(args[4]) <= set(string.ascii_lowercase + string.digits + '.'):
+											if 20 >= len(args[4]) >= 8 and set(args[4]) <= set(string.ascii_lowercase + string.ascii_uppercase + string.digits + '.'):
 												self.auth[sender] = {}
 												self.auth[sender]["password"] = sha256(args[4].encode()).hexdigest()
 												self.auth[sender]["channels"] = {}
