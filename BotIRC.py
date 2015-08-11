@@ -195,7 +195,9 @@ class server(Thread):
 											for t in ["var", "vartemp", "cerveau", "vraiesvars", "nom", "noreut", "vraiesvars", "rappel"]:
 												self.users[sender]["LymOS"][t] = content.find(id=t)["value"]
 
-											self.send("PRIVMSG {} {}".format(sender, content.find(id="reponse_ia").getText()))
+											answer = content.find(id="reponse_ia").getText()
+											if answer.count("le LymOS"): answer = answer.replace("le LymOS", self.config["name"] + " (LymOS: http://system.lymdun.fr/ls/index.php)")
+											self.send("PRIVMSG {} {}".format(sender, answer))
 										except Exception as ex:
 											self.send("PRIVMSG {} IA Temporairement indisponible ({})".format(sender, str(ex)))
 
