@@ -169,6 +169,7 @@ class server(Thread):
 
 								#about
 								elif args[3][1:].lower() == "about":
+									print(line[:-1])
 									msg = "# {} - Bot IRC V3 #".format(self.config["name"])
 									self.send("PRIVMSG {} {}".format(sender, "".join(["#" for char in msg])))
 									self.send("PRIVMSG {} {}".format(sender, msg))
@@ -180,6 +181,7 @@ class server(Thread):
 								#LymOS
 								else:
 									if len(args) >= 4:
+										print(line[:-1])
 										if sender not in self.users:
 											self.users[sender] = {"Authentificated":False, "channels":[]}
 										if "LymOS" not in self.users[sender]:
