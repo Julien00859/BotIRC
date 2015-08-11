@@ -190,7 +190,7 @@ class server(Thread):
 												for t in ["var", "vartemp", "cerveau", "vraiesvars", "nom", "noreut", "vraiesvars", "rappel"]:
 													self.users[sender]["LymOS"][t] = content.find(id=t)["value"]
 												
-											self.users[sender]["LymOS"]["usersay"] = " ".join(args[3:len(args)])
+											self.users[sender]["LymOS"]["usersay"] = " ".join(args[3:len(args)]).replace(self.config["name"], "LymOS")
 											content = BeautifulSoup(urllib.request.urlopen("http://system.lymdun.fr/ls/index.php", data=urllib.parse.urlencode(self.users[sender]["LymOS"]).encode()).read().decode(), "html.parser")
 											for t in ["var", "vartemp", "cerveau", "vraiesvars", "nom", "noreut", "vraiesvars", "rappel"]:
 												self.users[sender]["LymOS"][t] = content.find(id=t)["value"]
