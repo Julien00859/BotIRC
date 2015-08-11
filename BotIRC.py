@@ -127,7 +127,7 @@ class server(Thread):
 												if "fail" in self.auth[sender]:
 													for user in self.auth[sender]["fail"]:
 														self.send("PRIVMSG {} {} a tenté de se connecter {} fois sur votre compte".format(sender, user, self.auth[sender]["fail"][user]))
-														del self.auth.fail[user]
+														del self.auth["fail"][user]
 												for channel in self.config["channels"]:
 													if channel in self.auth[sender]["channels-op"]:
 														self.send("MODE {} +o {}".format(channel, sender))
