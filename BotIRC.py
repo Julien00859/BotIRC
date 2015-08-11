@@ -7,6 +7,8 @@ from hashlib import sha256
 import json
 import os
 import string
+import urllib.request
+from bs4 import BeautifulSoup as bs
 
 class server(Thread):
 	def __init__(self):
@@ -165,15 +167,33 @@ class server(Thread):
 									else:
 										self.send("PRIVMSG {} {} n'est pas authentifié".format(sender, args[4]))
 
+								#about
 								elif args[3][1:].lower() == "about":
-									msg = "# {} - IRC Bot #".format(self.config["name"])
+									msg = "# {} - Bot IRC V3 #".format(self.config["name"])
 									self.send("PRIVMSG {} {}".format(sender, "".join(["#" for char in msg])))
-									self.send(msg)
+									self.send("PRIVMSG {} {}".format(sender, msg))
 									self.send("PRIVMSG {} {}".format(sender, "".join(["#" for char in msg])))
 									self.send("PRIVMSG {} {} est un bot (programme) développé par Julien Castiaux (Julien008) pour le réseau IRC de la BakaConnect.".format(sender, self.config["name"]))
+									self.send("PRIVMSG {} L'intelligence artificielle est basée sur LymOS et est développé par Lymdun".format(sender))
 									self.send("PRIVMSG {} README complet: https://github.com/Julien00859/Bot_IRC/blob/master/README.md".format(sender))
+
+								#LymOS
 								else:
-									line[:-1]
+									if len(args) >= 4:
+										if sender not in self.users:
+											self.users[sender] = {"Authentificated":False, "channels":[]}
+										if "LymOS" not in self.users[sender]:
+											self.users[sender]["LymOS"] = {}
+											content = bs(urllib.request.urlopen("http://system.lymdun.fr/ls/index.php").read().decode())
+											for t in ["var", "vartemp", "cerveau", "vraiesvars", "nom", "noreut", "vraiesvars", "rappel"]:
+												self.users[sender]["LymOS"][t] = content.find(id=t)["value"]
+											
+										self.users[sender]["LymOS"]["usersay"] = " ".join(args[3:len(args)])
+										content = bs(urllib.request.urlopen("http://system.lymdun.fr/ls/index.php", data=urllib.parse.urlencode(self.users[sender]["LymOS"]).encode()).read().decode())
+										for t in ["var", "vartemp", "cerveau", "vraiesvars", "nom", "noreut", "vraiesvars", "rappel"]:
+											self.users[sender]["LymOS"][t] = content.find(id=t)["value"]
+											
+										self.send("PRIVMSG {} {}".format(sender, content.find(id="reponse_ia").getText()))
 
 							#PublicMessage
 							else:
