@@ -1,15 +1,15 @@
 #!/usr/bin/python3.4
 
-import socket
-from select import select
-from threading import Thread
+from bs4 import BeautifulSoup
 from hashlib import sha256
 import json
-import os
+from select import select
+import socket
 import string
+from threading import Thread
+import time
 import urllib.request
-from bs4 import BeautifulSoup
-
+ 
 class server(Thread):
 	def __init__(self):
 		self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -18,8 +18,14 @@ class server(Thread):
 		self.users = {} #{Julien008:channels:{#Dev:{mode:+o}}}
 		Thread.__init__(self)
 
+	def log(self, msg):
+		if msg != "":
+			if msg.endswith("\n"): msg=msg[:-1]
+			print("{} {}{}".format(time.strftime("%x-%X"), "<<< " if not msg.startswith(">>>") else "", msg))
+			with open("server.log", "a") as file: file.write("{} {}{}\n".format(time.strftime("%x-%X"), "<<< " if not msg.startswith(">>>") else "", msg))
+
 	def send(self, cmd):
-		print(">>> " + cmd)
+		self.log(">>> " + cmd)
 		self.server.send((cmd + "\r\n").encode("UTF-8"))
 
 	def run(self):
@@ -32,17 +38,17 @@ class server(Thread):
 		#On attend la fin du message du jour
 		while True:
 			motd = self.server.recv(1024).decode()
-			print(motd)
+			[self.log(motd) for motd in motd.split("\r\n")]
 			if motd.count("Current Global"):
 				break
 
 		self.send("OPER Bot " + self.config["oper_password"])
-		print(self.server.recv(1024).decode())
+		[self.log(msg) for msg in self.server.recv(1024).decode().split("\r\n")]
 
 		for channel in self.config["channels"]:
 			self.send("JOIN " + channel)
 			names = self.server.recv(1024).decode()
-			print(names)
+			self.log([names for names in names.split("\r\n")])
 
 			names = names.split("\r\n")[1]
 			for user in names.replace(":","").split(" ")[5:len(names.split(" "))]:
@@ -59,28 +65,21 @@ class server(Thread):
 		for channel in self.config["channels"]:
 			self.send("SAMode {} +o {}".format(channel, self.config["name"]))
 
-
-
 		self.running = True
 		while self.running:
 			rlist, wlist, xlist = select([self.server], [], [], 0.1)
 			if rlist:
 				try:
 					message = self.server.recv(1024).decode()
-
 				except Exception as ex:
 					print("ex")
-
 				else:
 					lines = message.split("\r\n")
 					for line in lines:
 						args = line.split(" ")
 
 						if line.count("PRIVMSG " + self.config["name"]) == 0:
-							if line.endswith("\n"):
-								print(line,end="")
-							else:
-								print(line)
+							self.log(line)
 
 						#Ping
 						if len(args) >= 1 and args[0] == "PING":
@@ -95,7 +94,7 @@ class server(Thread):
 
 								#register <password>
 								if args[3][1:].lower() == "register":
-									print(" ".join(args[0:4]))
+									self.log(" ".join(args[0:4]))
 									if sender not in self.auth:
 										if len(args) >= 5:
 											if 20 >= len(args[4]) >= 8 and set(args[4]) <= set(string.ascii_lowercase + string.digits + '.'):
@@ -115,7 +114,7 @@ class server(Thread):
 
 								#Login <password>
 								elif args[3][1:].lower() == "login":
-									print(" ".join(args[0:4]))
+									self.log(" ".join(args[0:4]))
 									if sender in self.auth:
 										if len(args) >= 5:
 											if self.auth[sender]["password"] == sha256(args[4].encode()).hexdigest():
@@ -161,7 +160,7 @@ class server(Thread):
 								
 								#islogged <nick>
 								elif args[3][1:].lower() == "islogged":
-									print(line[:-1])
+									self.log(line)
 									if len(args) >= 5 and args[4] in self.users and self.users[args[4]]["Authentificated"] == True:
 										self.send("PRIVMSG {} {} est authentifié".format(sender, args[4]))
 									else:
@@ -169,7 +168,7 @@ class server(Thread):
 
 								#about
 								elif args[3][1:].lower() == "about":
-									print(line[:-1])
+									self.log(line)
 									msg = "# {} - Bot IRC V3 #".format(self.config["name"])
 									self.send("PRIVMSG {} {}".format(sender, "".join(["#" for char in msg])))
 									self.send("PRIVMSG {} {}".format(sender, msg))
@@ -181,21 +180,24 @@ class server(Thread):
 								#LymOS
 								else:
 									if len(args) >= 4:
-										print(line[:-1])
-										if sender not in self.users:
-											self.users[sender] = {"Authentificated":False, "channels":[]}
-										if "LymOS" not in self.users[sender]:
-											self.users[sender]["LymOS"] = {}
-											content = BeautifulSoup(urllib.request.urlopen("http://system.lymdun.fr/ls/index.php").read().decode(), "html.parser")
+										self.log(line)
+										try:
+											if sender not in self.users:
+												self.users[sender] = {"Authentificated":False, "channels":[]}
+											if "LymOS" not in self.users[sender]:
+												self.users[sender]["LymOS"] = {}
+												content = BeautifulSoup(urllib.request.urlopen("http://system.lymdun.fr/ls/index.php").read().decode(), "html.parser")
+												for t in ["var", "vartemp", "cerveau", "vraiesvars", "nom", "noreut", "vraiesvars", "rappel"]:
+													self.users[sender]["LymOS"][t] = content.find(id=t)["value"]
+												
+											self.users[sender]["LymOS"]["usersay"] = " ".join(args[3:len(args)])
+											content = BeautifulSoup(urllib.request.urlopen("http://system.lymdun.fr/ls/index.php", data=urllib.parse.urlencode(self.users[sender]["LymOS"]).encode()).read().decode(), "html.parser")
 											for t in ["var", "vartemp", "cerveau", "vraiesvars", "nom", "noreut", "vraiesvars", "rappel"]:
 												self.users[sender]["LymOS"][t] = content.find(id=t)["value"]
-											
-										self.users[sender]["LymOS"]["usersay"] = " ".join(args[3:len(args)])
-										content = BeautifulSoup(urllib.request.urlopen("http://system.lymdun.fr/ls/index.php", data=urllib.parse.urlencode(self.users[sender]["LymOS"]).encode()).read().decode(), "html.parser")
-										for t in ["var", "vartemp", "cerveau", "vraiesvars", "nom", "noreut", "vraiesvars", "rappel"]:
-											self.users[sender]["LymOS"][t] = content.find(id=t)["value"]
 
-										self.send("PRIVMSG {} {}".format(sender, content.find(id="reponse_ia").getText()))
+											self.send("PRIVMSG {} {}".format(sender, content.find(id="reponse_ia").getText()))
+										except Exception as ex:
+											self.send("PRIVMSG {} IA Temporairement indisponible ({})".format(sender, str(ex)))
 
 							#PublicMessage
 							else:
@@ -234,6 +236,7 @@ class server(Thread):
 		self.running = False
 
 Bot = server()
+Bot.log("Starting")
 Bot.start()
 
 while True:
