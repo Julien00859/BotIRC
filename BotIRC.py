@@ -141,7 +141,10 @@ class server(Thread):
 													self.auth[sender]["fail"] = {}
 													self.auth[sender]["fail"][user+"@"+host] = 1
 												else:
-													self.auth[sender]["fail"][user+"@"+host] += 1
+													if user+"@"+host in self.auth[sender]["fail"]:
+														self.auth[sender]["fail"][user+"@"+host] += 1
+													else:
+														self.auth[sender]["fail"][user+"@"+host] = 1
 
 													if host != "localhost" and host != "127.0.0.1":
 														if len(self.config["auth_fail"]) > self.auth[sender]["fail"][user+"@"+host]:
