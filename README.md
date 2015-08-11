@@ -26,7 +26,7 @@ Ne sont pas sauvegardés les données suivantes:
 
 Sont envoyés au site web http://system.lymdun.fr/ls/index.php les messages suivant.:
 
-- Messages privés envoyés au bot
+- Messages privés envoyés au bot si ce message n'est pas une commande interne
 
 ## Commandes disponible
 
