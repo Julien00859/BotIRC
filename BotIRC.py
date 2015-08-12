@@ -45,9 +45,9 @@ class server(Thread):
 
 			answer = content.find(id="reponse_ia").getText()
 			if answer.count("le LymOS"): answer = answer.replace("le LymOS", self.config["name"] + " (LymOS: http://system.lymdun.fr/ls/)")
-			self.send("PRIVMSG {} {}".format(channel, answer if answer else "..."))
+			self.send("PRIVMSG {} :{}".format(channel, answer if answer else "..."))
 		except Exception as ex:
-			self.send("PRIVMSG {} IA Temporairement indisponible ({})".format(channel, str(ex)))
+			self.send("PRIVMSG {} :IA Temporairement indisponible ({})".format(channel, str(ex)))
 
 	def run(self):
 		self.server.connect((self.config["host"], self.config["port"]))
