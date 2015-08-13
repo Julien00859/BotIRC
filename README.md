@@ -1,6 +1,6 @@
-# Belzebot - Bot_IRC V3
+# MisterSmith - Bot_IRC V3
 
-Belzebot est un client (bot) développé en Python qui permet de gérer l'authentification des utilisateurs sur des channels marqués comme officiel.
+MisterSmith est un client (bot) développé en Python qui permet de gérer l'authentification des utilisateurs sur des channels marqués comme officiel.
 
 ## Fonctionnalités
 - Connexion à un serveur IRC
