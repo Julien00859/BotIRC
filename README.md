@@ -10,6 +10,7 @@ Belzebot est un client (bot) développé en Python qui permet de gérer l'authen
 - Authentification des nicks des utilisateurs
 - Sanction en cas d'échec à l'autentification
 - Discution par message privé avec une intelligence artificielle développée par Lymdun (LymOS: http://system.lymdun.fr/ls/)
+- Check des URL pour en récupérer le title de la page cible
 
 ## Vie privée
 
