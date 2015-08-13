@@ -4,8 +4,9 @@
 	"name":"MisterSmith",
 	"server_password":"",
 	"oper_password":"",
+	"password_regex":"^[A-Za-z0-9]{8,}$",
 	"channels":[
-		"#Channel"
+		"#Dev"
 	],
 	"auth_fail":[
 		"",

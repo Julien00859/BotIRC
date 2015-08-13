@@ -3,9 +3,9 @@
 from bs4 import BeautifulSoup
 from hashlib import sha256
 import json
+import re
 from select import select
 import socket
-import string
 from threading import Thread
 import time
 import urllib.request
@@ -16,6 +16,8 @@ class server(Thread):
 		self.config = json.load(open("config.json","r"))
 		self.auth = json.load(open("auth.json","r"))
 		self.users = {}
+		self.password_regex = re.compile(self.config["password_regex"])
+		self.url_regex =  re.compile("^(http(s)?://)?([A-Za-z0-9\-_%]{1,}\.)?[A-Za-z0-9\-_%]{1,}\.(aero|biz|com|coop|edu|info|int|net|org|mil|museum|name|pro|gov|ad|ae|af|ag|ai|al|am|an|ao|aq|ar|as|at|au|aw|az|ba|bb|bd|be|bf|bg|bh|bi|bj|bm|bn|bo|br|bs|bt|bv|bw|by|bz|ca|cc|cf|cg|ch|ci|ck|cl|cm|cn|co|cr|cu|cv|cx|cy|cz|de|dk|dj|dm|do|dz|ec|ee|eg|eh|er|es|et|fi|fj|fk|fm|fo|fr|fx|ga|gd|ge|gf|gg|gh|gi|gl|gn|gp|gq|gr|gs|gt|gu|gy|hk|hm|hn|hr|ht|hu|id|ie|il|in|io|iq|ir|is|it|je|jm|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|mh|mk|ml|mm|mn|mo|mp|mq|mr|ms|mt|mu|mx|mw|my|mz|na|nc|nf|ne|ng|ni|nl|no|np|nr|nu|nz|om|pa|pe|pf|ph|pk|pl|pm|pn|pq|pr|pt|py|pw|qa|re|ro|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|sk|sl|sm|sn|so|sr|st|sv|sy|sz|tc|td|tf|th|tj|tm|tn|to|tp|tr|tt|tv|tw|tz|ua|ug|uk|um|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|ye|yt|yu|za|zr|zm|zw)+(/[A-Za-z0-9\-/_%\.]{1,})?$")
 		Thread.__init__(self)
 
 	def log(self, msg):
@@ -37,7 +39,7 @@ class server(Thread):
 				content = BeautifulSoup(urllib.request.urlopen("http://system.lymdun.fr/ls/index.php").read().decode(), "html.parser")
 				for t in ["var", "vartemp", "cerveau", "vraiesvars", "nom", "noreut", "vraiesvars", "rappel"]:
 					self.users[channel]["LymOS"][t] = content.find(id=t)["value"]
-				
+
 			self.users[channel]["LymOS"]["usersay"] = msg.replace(self.config["name"], "LymOS")
 			content = BeautifulSoup(urllib.request.urlopen("http://system.lymdun.fr/ls/index.php", data=urllib.parse.urlencode(self.users[channel]["LymOS"]).encode()).read().decode(), "html.parser")
 			for t in ["var", "vartemp", "cerveau", "vraiesvars", "nom", "noreut", "vraiesvars", "rappel"]:
@@ -63,14 +65,14 @@ class server(Thread):
 			if motd.count("Current Global"):
 				break
 
-		self.send("OPER Bot " + self.config["oper_password"])
-		[self.log(msg) for msg in self.server.recv(1024).decode().split("\r\n")]
-
 		for channel in self.config["channels"]:
 			self.send("JOIN " + channel)
 
-		for channel in self.config["channels"]:
-			self.send("SAMode {} +o {}".format(channel, self.config["name"]))
+		if self.config["oper_password"]:
+			self.send("OPER Bot " + self.config["oper_password"])
+			[self.log(msg) for msg in self.server.recv(1024).decode().split("\r\n")]
+			for channel in self.config["channels"]:
+				self.send("SAMode {} +o {}".format(channel, self.config["name"]))
 
 		self.running = True
 		while self.running:
@@ -104,7 +106,7 @@ class server(Thread):
 									self.log(" ".join(args[0:4]))
 									if sender not in self.auth:
 										if len(args) >= 5:
-											if 20 >= len(args[4]) >= 8 and set(args[4]) <= set(string.ascii_lowercase + string.ascii_uppercase + string.digits + '.'):
+											if self.password_regex.search(args[4]):
 												self.auth[sender] = {}
 												self.auth[sender]["password"] = sha256(args[4].encode()).hexdigest()
 												self.auth[sender]["channels"] = {}
@@ -115,7 +117,7 @@ class server(Thread):
 												for channel in self.config["channels"]:
 													self.send("MODE {} {} {}".format(channel, self.auth[sender]["channels"][channel], sender))
 											else:
-												self.send("PRIVMSG {} ERREUR: Le mot de passe doit être compris entre 8 et 20 caractère et être constitué uniquement de chiffre et de lettre".format(sender))
+												self.send("PRIVMSG {} ERREUR: Le mot de passe doit avoir au moins 8 caractères et être constitué uniquement de chiffre et de lettre (REGEX: {})".format(sender, self.config["password_regex"]))
 										else:
 											self.send("PRIVMSG {} ERREUR: Vous devez entrer un mot de passe".format(sender))
 									else:
@@ -166,7 +168,7 @@ class server(Thread):
 											self.send("PRIVMSG {} ERREUR: Vous devez entrer un mot de passe".format(sender))
 									else:
 										self.send("PRIVMSG {} ERRER: Vous n'est pas encore enregistré. Merci de vous enregistrer via la commande /msg {} register votre_mot_de_passe".format(sender, self.config["name"]))
-								
+
 								#islogged <nick>
 								elif args[3][1:].lower() == "islogged":
 									self.log(line)
@@ -191,11 +193,21 @@ class server(Thread):
 									if len(args) >= 4:
 										self.log(line)
 										self.sendToIA(sender, " ".join(args[3:len(args)]))
-										
+
 							#PublicMessage
 							else:
+								#Message commençant par le nom de notre bot
 								if args[3][1:].lower().count(self.config["name"].lower()):
 									self.sendToIA(args[2], " ".join(args[4:len(args)]))
+
+								for arg in args[3:len(args)]:
+									if url_regex.search(arg):
+										try:
+											self.send("PRIVMSG {} Titre du site {}: {}".format(args[2], arg, BeautifulSoup(urllib.request.urlopen(arg if arg.startswith("http") else "http://"+arg).read(), "html.parser").title.getText()))
+										except ValueError as ve:
+											self.log("REGEX Error: " + ve)
+										except Exception as ex:
+											self.send("PRIVMSG {} Erreur lors de la vérification de la page {}: {}".format(args[2], arg, ex))
 
 
 						#Join
@@ -207,7 +219,7 @@ class server(Thread):
 							if self.users[sender]["Authentificated"] == True:
 								for channel in args[2][1:].split(","):
 									if channel in self.auth[sender]["channels"].keys():
-										self.send("MODE {} {} {}".format(channel, self.auth[sender]["channels"][channel], sender))										
+										self.send("MODE {} {} {}".format(channel, self.auth[sender]["channels"][channel], sender))
 							else:
 								self.send("PRIVMSG {} Le salon {} est un salon officiel qui nécessite une authentification.".format(sender, args[2][1:]))
 								if sender in self.auth:
