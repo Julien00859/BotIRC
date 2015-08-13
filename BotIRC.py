@@ -9,6 +9,7 @@ import socket
 from threading import Thread
 import time
 import urllib.request
+from os import listdir
 
 class server(Thread):
 	def __init__(self):
@@ -173,10 +174,7 @@ class server(Thread):
 								#islogged <nick>
 								elif args[3].lower() == "islogged":
 									self.log(line)
-									if len(args) >= 5 and args[4] in self.users and self.users[args[4]]["Authentificated"] == True:
-										self.send("PRIVMSG {} {} est authentifié".format(sender, args[4]))
-									else:
-										self.send("PRIVMSG {} {} n'est pas authentifié".format(sender, args[4]))
+									self.send("PRIVMSG {} {} {} authentifié".format(sender, args[4], "est" if len(args) >= 5 and args[4] in self.users and self.users[args[4]]["Authentificated"] == True else "n'est pas"))
 
 								#about
 								elif args[3].lower() == "about":
@@ -204,10 +202,10 @@ class server(Thread):
 								for arg in args[3:len(args)]:
 									if self.url_regex.search(arg):
 										try:
-											arg = arg if arg.startswith("http") else "http://"+arg
+											arg = arg if arg.startswith("http") else "http://" + arg
 											self.send("PRIVMSG {} {} [{}]".format(args[2], BeautifulSoup(urllib.request.urlopen(arg).read(), "html.parser").title.getText().replace("\n",""), arg))
 										except AttributeError:
-											self.send("PRIVMSG {} {} [{}]".format(args[2], "Fichier " + arg[arg.rfind(".")+1:].upper(), arg))
+											self.send("PRIVMSG {} {} [{}]".format(args[2], "Fichier de type " + arg[arg.rfind(".")+1:].upper(), arg))
 										except Exception as ex:
 											self.send("PRIVMSG {} {} [{}]".format(args[2], ex, arg))
 
@@ -244,6 +242,9 @@ class server(Thread):
 	def stop(self):
 		self.send("QUIT :Le vaisseau mère a besoin de moi !")
 		self.running = False
+
+if "auth.json" not in listdir():
+	open("auth.json", "w").write("{}")
 
 Bot = server()
 Bot.log("Starting")
