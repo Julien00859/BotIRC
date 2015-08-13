@@ -9,7 +9,8 @@ import socket
 from threading import Thread
 import time
 import urllib.request
-from os import listdir, getcwd, path.join
+from os import listdir, getcwd
+from os.path import join as pathjoin
 from shutil import copyfile
 
 class server(Thread):
@@ -246,10 +247,10 @@ class server(Thread):
 		self.running = False
 
 if "auth.json" not in listdir():
-	copyfile(path.join(getcwd(), "template", "auth.json"), path.join(getcwd(), "auth.json"))
+	copyfile(pathjoin(getcwd(), "template", "auth.json"), pathjoin(getcwd(), "auth.json"))
 
 if "config.json" not in listdir():
-	copyfile(path.join(getcwd(), "template", "config.json"), path.join(getcwd(), "config.json"))
+	copyfile(pathjoin(getcwd(), "template", "config.json"), pathjoin(getcwd(), "config.json"))
 
 Bot = server()
 Bot.log("Starting")
