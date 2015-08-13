@@ -17,7 +17,7 @@ class server(Thread):
 		self.auth = json.load(open("auth.json","r"))
 		self.users = {}
 		self.password_regex = re.compile(self.config["password_regex"])
-		self.url_regex =  re.compile("^(http(s)?://)?([A-Za-z0-9\-_%]{1,}\.)?[A-Za-z0-9\-_%]{1,}\.(aero|biz|com|coop|edu|info|int|net|org|mil|museum|name|pro|gov|ad|ae|af|ag|ai|al|am|an|ao|aq|ar|as|at|au|aw|az|ba|bb|bd|be|bf|bg|bh|bi|bj|bm|bn|bo|br|bs|bt|bv|bw|by|bz|ca|cc|cf|cg|ch|ci|ck|cl|cm|cn|co|cr|cu|cv|cx|cy|cz|de|dk|dj|dm|do|dz|ec|ee|eg|eh|er|es|et|fi|fj|fk|fm|fo|fr|fx|ga|gd|ge|gf|gg|gh|gi|gl|gn|gp|gq|gr|gs|gt|gu|gy|hk|hm|hn|hr|ht|hu|id|ie|il|in|io|iq|ir|is|it|je|jm|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|mh|mk|ml|mm|mn|mo|mp|mq|mr|ms|mt|mu|mx|mw|my|mz|na|nc|nf|ne|ng|ni|nl|no|np|nr|nu|nz|om|pa|pe|pf|ph|pk|pl|pm|pn|pq|pr|pt|py|pw|qa|re|ro|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|sk|sl|sm|sn|so|sr|st|sv|sy|sz|tc|td|tf|th|tj|tm|tn|to|tp|tr|tt|tv|tw|tz|ua|ug|uk|um|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|ye|yt|yu|za|zr|zm|zw)+(/[A-Za-z0-9\-/_%\.]{1,})?$")
+		self.url_regex =  re.compile("^(http(s)?://)?([A-Za-z0-9\-_%]{1,}\.)?[A-Za-z0-9\-_%]{1,}\.(aero|biz|com|coop|edu|info|int|net|org|mil|museum|name|pro|gov|ad|ae|af|ag|ai|al|am|an|ao|aq|ar|as|at|au|aw|az|ba|bb|bd|be|bf|bg|bh|bi|bj|bm|bn|bo|br|bs|bt|bv|bw|by|bz|ca|cc|cf|cg|ch|ci|ck|cl|cm|cn|co|cr|cu|cv|cx|cy|cz|de|dk|dj|dm|do|dz|ec|ee|eg|eh|er|es|et|fi|fj|fk|fm|fo|fr|fx|ga|gd|ge|gf|gg|gh|gi|gl|gn|gp|gq|gr|gs|gt|gu|gy|hk|hm|hn|hr|ht|hu|id|ie|il|in|io|iq|ir|is|it|je|jm|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|mh|mk|ml|mm|mn|mo|mp|mq|mr|ms|mt|mu|mx|mw|my|mz|na|nc|nf|ne|ng|ni|nl|no|np|nr|nu|nz|om|pa|pe|pf|ph|pk|pl|pm|pn|pq|pr|pt|py|pw|qa|re|ro|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|sk|sl|sm|sn|so|sr|st|sv|sy|sz|tc|td|tf|th|tj|tm|tn|to|tp|tr|tt|tv|tw|tz|ua|ug|uk|um|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|ye|yt|yu|za|zr|zm|zw)+/?([A-Za-z0-9\-/_%\.]{1,})?$")
 		Thread.__init__(self)
 
 	def log(self, msg):
@@ -97,12 +97,13 @@ class server(Thread):
 						#PrivMSG
 						elif len(args) >= 4 and args[1] == "PRIVMSG":
 							sender = line[1:line.find("!")]
+							args[3] = args[3][1:]
 
 							#PrivateMessage
 							if args[2] == self.config["name"]:
 
 								#register <password>
-								if args[3][1:].lower() == "register":
+								if args[3].lower() == "register":
 									self.log(" ".join(args[0:4]))
 									if sender not in self.auth:
 										if len(args) >= 5:
@@ -124,7 +125,7 @@ class server(Thread):
 										self.send("PRIVMSG {} ERRER: Vous êtes déjà enregistré. Merci de vous connecter via la commande /msg {} login votre_mot_de_passe".format(sender, self.config["name"]))
 
 								#Login <password>
-								elif args[3][1:].lower() == "login":
+								elif args[3].lower() == "login":
 									self.log(" ".join(args[0:4]))
 									if sender in self.auth:
 										if len(args) >= 5:
@@ -170,7 +171,7 @@ class server(Thread):
 										self.send("PRIVMSG {} ERRER: Vous n'est pas encore enregistré. Merci de vous enregistrer via la commande /msg {} register votre_mot_de_passe".format(sender, self.config["name"]))
 
 								#islogged <nick>
-								elif args[3][1:].lower() == "islogged":
+								elif args[3].lower() == "islogged":
 									self.log(line)
 									if len(args) >= 5 and args[4] in self.users and self.users[args[4]]["Authentificated"] == True:
 										self.send("PRIVMSG {} {} est authentifié".format(sender, args[4]))
@@ -178,7 +179,7 @@ class server(Thread):
 										self.send("PRIVMSG {} {} n'est pas authentifié".format(sender, args[4]))
 
 								#about
-								elif args[3][1:].lower() == "about":
+								elif args[3].lower() == "about":
 									self.log(line)
 									msg = "# {} - Bot IRC V3 #".format(self.config["name"])
 									self.send("PRIVMSG {} {}".format(sender, "".join(["#" for char in msg])))
@@ -197,17 +198,18 @@ class server(Thread):
 							#PublicMessage
 							else:
 								#Message commençant par le nom de notre bot
-								if args[3][1:].lower().count(self.config["name"].lower()):
+								if args[3].lower().count(self.config["name"].lower()):
 									self.sendToIA(args[2], " ".join(args[4:len(args)]))
 
 								for arg in args[3:len(args)]:
-									if url_regex.search(arg):
+									if self.url_regex.search(arg):
 										try:
-											self.send("PRIVMSG {} Titre du site {}: {}".format(args[2], arg, BeautifulSoup(urllib.request.urlopen(arg if arg.startswith("http") else "http://"+arg).read(), "html.parser").title.getText()))
-										except ValueError as ve:
-											self.log("REGEX Error: " + ve)
+											arg = arg if arg.startswith("http") else "http://"+arg
+											self.send("PRIVMSG {} {} [{}]".format(args[2], BeautifulSoup(urllib.request.urlopen(arg).read(), "html.parser").title.getText().replace("\n",""), arg))
+										except AttributeError:
+											self.send("PRIVMSG {} {} [{}]".format(args[2], "Fichier " + arg[arg.rfind(".")+1:].upper(), arg))
 										except Exception as ex:
-											self.send("PRIVMSG {} Erreur lors de la vérification de la page {}: {}".format(args[2], arg, ex))
+											self.send("PRIVMSG {} {} [{}]".format(args[2], ex, arg))
 
 
 						#Join
