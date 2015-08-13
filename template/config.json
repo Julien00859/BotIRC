@@ -1,7 +1,7 @@
 {
 	"host":"localhost",
 	"port":6667,
-	"name":"Belzebot",
+	"name":"MisterSmith",
 	"server_password":"",
 	"oper_password":"",
 	"password_regex":"^[A-Za-z0-9]{8,}$",
