@@ -145,6 +145,8 @@ class server(Thread):
 														self.send("PRIVMSG {} {} a tenté de se connecter {} fois sur votre compte".format(sender, user, self.auth[sender]["fail"][user]))
 													del self.auth[sender]["fail"]
 												for channel in self.config["channels"]:
+													if channel not in self.auth[sender]["channels"]:
+														self.auth[sender]["channels"][channel] = "+v"
 													self.send("MODE {} {} {}".format(channel, self.auth[sender]["channels"][channel], sender))
 											else:
 												user = args[0][args[0].find("!")+1:args[0].find("@")]
