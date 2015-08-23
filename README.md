@@ -1,4 +1,4 @@
-# MisterSmith - Bot_IRC V3
+# MisterSmith - BotIRC V3
 
 MisterSmith est un client (bot) développé en Python qui permet de gérer l'authentification des utilisateurs sur des channels marqués comme officiel.
 
@@ -9,7 +9,7 @@ MisterSmith est un client (bot) développé en Python qui permet de gérer l'aut
 - Enregistrement des nicks des utilisateurs grâce à un mot de passe hashé en SHA-256
 - Authentification des nicks des utilisateurs
 - Sanction en cas d'échec à l'authentification
-- Discussion par message privé avec une intelligence artificielle développée par Lymdun (LymOS: http://system.lymdun.fr/ls/)
+- Discussion par message privé avec une intelligence artificielle développée par [Lymdun](https://github.com/Lymdun/) (LymOS: http://system.lymdun.fr/ls/)
 - Check des URL pour en récupérer le title de la page cible
 
 ## Vie privée
@@ -35,3 +35,7 @@ Sont envoyés au site web http://system.lymdun.fr/ls/index.php les messages suiv
 - `login <mot de passe>`: permet d'authentifier le nickname de l'utilisateur
 - `islogged <nickname>`: permet de savoir si l'utilisateur est authentifié ou non
 - `about`: donne un lien vers cette page
+
+## Remerciements
+
+J'aimerais remercier mon ami [Lymdun](https://github.com/Lymdun/) pour m'avoir aidé à intégrer son intelligence artificielle dans mon bot. Remerciement spéciaux à Ikutama, Shiromae, Nabricot et Rozi qui malgré le fait qu'ils pigeaient que puik m'ont quand même aidé de leur mieux et soutenu pendant toute la phase de développement. Un dernier gros kiss à toute la baka juste parce que je vous aime <3
