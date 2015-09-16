@@ -20,8 +20,8 @@ class server(Thread):
 		self.auth = json.load(open("auth.json","r"))
 		self.users = {}
 		self.password_regex = re.compile(self.config["password_regex"])
-		self.url_regex =  re.compile("^(http(s)?://)?([A-Za-z0-9\-_%]{1,}\.)?[A-Za-z0-9\-_%]{1,}\.(aero|biz|com|coop|edu|info|int|net|org|mil|museum|name|pro|gov|ad|ae|af|ag|ai|al|am|an|ao|aq|ar|as|at|au|aw|az|ba|bb|bd|be|bf|bg|bh|bi|bj|bm|bn|bo|br|bs|bt|bv|bw|by|bz|ca|cc|cf|cg|ch|ci|ck|cl|cm|cn|co|cr|cu|cv|cx|cy|cz|de|dk|dj|dm|do|dz|ec|ee|eg|eh|er|es|et|fi|fj|fk|fm|fo|fr|fx|ga|gd|ge|gf|gg|gh|gi|gl|gn|gp|gq|gr|gs|gt|gu|gy|hk|hm|hn|hr|ht|hu|id|ie|il|in|io|iq|ir|is|it|je|jm|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|mh|mk|ml|mm|mn|mo|mp|mq|mr|ms|mt|mu|mx|mw|my|mz|na|nc|nf|ne|ng|ni|nl|no|np|nr|nu|nz|om|pa|pe|pf|ph|pk|pl|pm|pn|pq|pr|pt|py|pw|qa|re|ro|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|sk|sl|sm|sn|so|sr|st|sv|sy|sz|tc|td|tf|th|tj|tm|tn|to|tp|tr|tt|tv|tw|tz|ua|ug|uk|um|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|ye|yt|yu|za|zr|zm|zw)([A-Za-z0-9\-/_%\.]{0,})?$")
-		self.ip_regex = re.compile("^(http(s)?://)?([0-9]{1,3}\.){3}[0-9]{1,3}(/[A-Za-z0-9\-/_%\.]{0,})?$")
+		self.url_regex =  re.compile("(http(s)?://)?([A-Za-z0-9\-_%]{1,}\.)?[A-Za-z0-9\-_%]{1,}\.(aero|biz|com|coop|edu|info|int|net|org|mil|museum|name|pro|gov|ad|ae|af|ag|ai|al|am|an|ao|aq|ar|as|at|au|aw|az|ba|bb|bd|be|bf|bg|bh|bi|bj|bm|bn|bo|br|bs|bt|bv|bw|by|bz|ca|cc|cf|cg|ch|ci|ck|cl|cm|cn|co|cr|cu|cv|cx|cy|cz|de|dk|dj|dm|do|dz|ec|ee|eg|eh|er|es|et|fi|fj|fk|fm|fo|fr|fx|ga|gd|ge|gf|gg|gh|gi|gl|gn|gp|gq|gr|gs|gt|gu|gy|hk|hm|hn|hr|ht|hu|id|ie|il|in|io|iq|ir|is|it|je|jm|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|mh|mk|ml|mm|mn|mo|mp|mq|mr|ms|mt|mu|mx|mw|my|mz|na|nc|nf|ne|ng|ni|nl|no|np|nr|nu|nz|om|pa|pe|pf|ph|pk|pl|pm|pn|pq|pr|pt|py|pw|qa|re|ro|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|sk|sl|sm|sn|so|sr|st|sv|sy|sz|tc|td|tf|th|tj|tm|tn|to|tp|tr|tt|tv|tw|tz|ua|ug|uk|um|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|ye|yt|yu|za|zr|zm|zw)([A-Za-z0-9\-/_%\.]{0,})?")
+		self.ip_regex = re.compile("(http(s)?://)?([0-9]{1,3}\.){3}[0-9]{1,3}(/[A-Za-z0-9\-/_%\.]{0,})?")
 		Thread.__init__(self)
 
 	def log(self, msg):
@@ -203,14 +203,13 @@ class server(Thread):
 									self.sendToIA(args[2], " ".join(args[4:len(args)]))
 
 								for arg in args[3:len(args)]:
-									if self.url_regex.search(arg) or self.ip_regex.search(arg):
+									match = self.url_regex.search(arg) if self.url_regex.search(arg) else self.ip_regex.search(arg)
+									if match:
+										arg = match.group(0) if match.group(0).startswith("http") else "http://" + match.group(0)
 										try:
-											arg = arg if arg.startswith("http") else "http://" + arg
 											self.send("PRIVMSG {} {} [{}]".format(args[2], BeautifulSoup(urllib.request.urlopen(arg).read(), "html.parser").title.getText().replace("\n",""), arg))
-										except AttributeError:
-											self.send("PRIVMSG {} {} [{}]".format(args[2], "Fichier de type " + arg[arg.rfind(".")+1:].upper(), arg))
-										except Exception as ex:
-											self.send("PRIVMSG {} {} [{}]".format(args[2], ex, arg))
+										except:
+											pass
 
 
 						#Join
