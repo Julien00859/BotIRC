@@ -231,9 +231,19 @@ class server(Thread):
 								else:
 									self.send("PRIVMSG {} Merci de vous enregistrer via la commande \"/msg {} register un_mot_de_passe\"".format(sender, self.config["name"]))
 
+						#Nick
+						elif len(args) >= 2 and args[1] == "NICK":
+							sender = line[1:line.find("!")]
+							if sender in self.users:
+								self.users[args[2]] = {"Authentificated": self.users[sender]["Authentificated"]}
+								del self.users[sender]
+
+							else:
+								self.users[args[2]] = {"Authentificated": False}
+
 						#Quit
 						elif len(args) >= 2 and args[1] == "QUIT":
-							if line[1:line.find("!")]in self.users:
+							if line[1:line.find("!")] in self.users:
 								del self.users[line[1:line.find("!")]]
 
 	def save(self):
