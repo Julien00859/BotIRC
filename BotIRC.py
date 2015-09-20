@@ -254,7 +254,7 @@ class server(Thread):
 
 							#PublicMessage
 							else:
-								arg = args[3: len(args)]
+								arg = " ".join(args[3: len(args)])
 								match = self.url_regex.search(arg) if self.url_regex.search(arg) else self.ip_regex.search(arg)
 								if match:
 									arg = match.group(0) if match.group(0).startswith("http") else "http://" + match.group(0)
