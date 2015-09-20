@@ -295,7 +295,8 @@ class server(Thread):
 							if line[1:line.find("!")] in self.users:
 								del self.users[line[1:line.find("!")]]
 
-			if time.time() > self.time + 60:
+			if time.time() > self.time + 115:
+				self.time = time.time()
 				self.send("PONG 127.0.0.1")
 				print("Errr")
 
