@@ -34,7 +34,7 @@ class server(Thread):
 		self.log(">>> " + cmd)
 		self.server.send((cmd + "\r\n").encode("UTF-8"))
 
-	def sendMsg(self, message, channels = self.config["channels"]):
+	def sendMsg(self, message, channels = json.load(open("config.json","r"))["channels"]):
 		for chan in channels:
 			self.send("PRIVMSG", chan, message)
 
