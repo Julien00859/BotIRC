@@ -186,20 +186,20 @@ class server(Thread):
 											if self.auth[username]["password"] == sha256(password.encode()).hexdigest():
 												self.send("KILL {} Ghost".format(username))
 												self.send("SANICK {} {}".format(sender, username))
-												if sender in self.users:
-													self.users[sender]["Authentificated"] = True
+												if username in self.users:
+													self.users[username]["Authentificated"] = True
 												else:
-													self.users[sender] = {"Authentificated":True, "channels":[]}
+													self.users[username] = {"Authentificated":True, "channels":[]}
 
-												self.send("PRIVMSG {} Vous êtes maintenant connecté".format(sender))
-												if "fail" in self.auth[sender]:
-													for user in self.auth[sender]["fail"]:
-														self.send("PRIVMSG {} {} a tenté de se connecter {} fois sur votre compte".format(sender, user, self.auth[sender]["fail"][user]))
-													del self.auth[sender]["fail"]
+												self.send("PRIVMSG {} Vous êtes maintenant connecté".format(username))
+												if "fail" in self.auth[username]:
+													for user in self.auth[username]["fail"]:
+														self.send("PRIVMSG {} {} a tenté de se connecter {} fois sur votre compte".format(username, user, self.auth[username]["fail"][user]))
+													del self.auth[username]["fail"]
 												for channel in self.config["channels"]:
-													if channel not in self.auth[sender]["channels"]:
-														self.auth[sender]["channels"][channel] = "+v"
-													self.send("MODE {} {} {}".format(channel, self.auth[sender]["channels"][channel], sender))
+													if channel not in self.auth[username]["channels"]:
+														self.auth[username]["channels"][channel] = "+v"
+													self.send("MODE {} {} {}".format(channel, self.auth[username]["channels"][channel], username))
 											else:
 												user = args[0][args[0].find("!")+1:args[0].find("@")]
 												host = args[0][args[0].find("@")+1:]
