@@ -33,6 +33,7 @@ Sont envoyés au site web http://system.lymdun.fr/ls/index.php les messages suiv
 
 - `register <mot de passe>`: permet d'enregistrer le nickname de l'utilisateur
 - `login <mot de passe>`: permet d'authentifier le nickname de l'utilisateur
+- `ghost <pseudo> <mot de passe>`: permet de forcer la connexion en temps que `<pseudo>`
 - `islogged <nickname>`: permet de savoir si l'utilisateur est authentifié ou non
 - `about`: donne un lien vers cette page
 
