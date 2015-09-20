@@ -36,7 +36,7 @@ class server(Thread):
 
 	def sendMsg(self, message, channels = json.load(open("config.json","r"))["channels"]):
 		for chan in channels:
-			self.send("PRIVMSG", chan, message)
+			self.send("PRIVMSG {} :{}".format(chan, message))
 
 	def sendToIA(self, channel, msg):
 		try:
