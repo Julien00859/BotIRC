@@ -59,7 +59,7 @@ class server(Thread):
 		except Exception as ex:
 			self.send("PRIVMSG {} :IA Temporairement indisponible ({})".format(channel, str(ex)))
 
-	def login(username, password):
+	def login(self, username, password):
 		if username in self.auth:
 			if len(args) >= 5:
 				if self.auth[username]["password"] == sha256(args[4].encode()).hexdigest():
@@ -184,12 +184,12 @@ class server(Thread):
 								#Login <password>
 								elif args[3].lower() == "login":
 									self.log(" ".join(args[0:4]))
-									login(sender, args[4])
+									self.login(sender, args[4])
 
 								#ghost <nick> <password>
 								elif args[3].casefold() == "ghost":
 									self.log(" ".join(args[0:5]))
-									if login(args[4], args[5]):
+									if self.login(args[4], args[5]):
 										self.send("KILL", args[4], "Ghost")
 										self.send("SANick", sender, args[4])
 
