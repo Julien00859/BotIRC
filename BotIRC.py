@@ -174,7 +174,59 @@ class server(Thread):
 										else:
 											self.send("PRIVMSG {} ERREUR: Vous devez entrer un mot de passe".format(sender))
 									else:
-										self.send("PRIVMSG {} ERRER: Vous n'est pas encore enregistré. Merci de vous enregistrer via la commande /msg {} register votre_mot_de_passe".format(sender, self.config["name"]))
+										self.send("PRIVMSG {} ERREUR: Vous n'est pas encore enregistré. Merci de vous enregistrer via la commande /msg {} register votre_mot_de_passe".format(sender, self.config["name"]))
+
+								#ghost <nickname> <password>
+								elif args[3].lower() == "ghost":
+									self.log(" ".join(args[0:5]))
+									if len(args) >= 6:
+										username = args[4]
+										password = args[5]
+										if username in self.auth:
+											if self.auth[username]["password"] == sha256(password.encode()).hexdigest():
+												self.send("KILL {} Ghost".format(username))
+												self.send("SANICK {} {}".format(sender, username))
+												if sender in self.users:
+													self.users[sender]["Authentificated"] = True
+												else:
+													self.users[sender] = {"Authentificated":True, "channels":[]}
+
+												self.send("PRIVMSG {} Vous êtes maintenant connecté".format(sender))
+												if "fail" in self.auth[sender]:
+													for user in self.auth[sender]["fail"]:
+														self.send("PRIVMSG {} {} a tenté de se connecter {} fois sur votre compte".format(sender, user, self.auth[sender]["fail"][user]))
+													del self.auth[sender]["fail"]
+												for channel in self.config["channels"]:
+													if channel not in self.auth[sender]["channels"]:
+														self.auth[sender]["channels"][channel] = "+v"
+													self.send("MODE {} {} {}".format(channel, self.auth[sender]["channels"][channel], sender))
+											else:
+												user = args[0][args[0].find("!")+1:args[0].find("@")]
+												host = args[0][args[0].find("@")+1:]
+
+												if not "fail" in self.auth[username]:
+													self.auth[username]["fail"] = {}
+													self.auth[username]["fail"][user+"@"+host] = 1
+												else:
+													if user+"@"+host in self.auth[username]["fail"]:
+														self.auth[username]["fail"][user+"@"+host] += 1
+													else:
+														self.auth[username]["fail"][user+"@"+host] = 1
+
+													if host != "localhost" and host != "127.0.0.1":
+														if len(self.config["auth_fail"]) > self.auth[username]["fail"][user+"@"+host]:
+															if self.config["auth_fail"][self.auth[username]["fail"][user+"@"+host]-2]:
+																self.send(self.config["auth_fail"][self.auth[username]["fail"][user+"@"+host]].format(host=host, user=user, nick=username))
+														else:
+															if self.config["auth_fail"][len(self.config["auth_fail"])-1]:
+																self.send(self.config["auth_fail"][len(self.config["auth_fail"])-1].format(host=host, user=user, nick=username))
+													else:
+														self.send("KILL {nick} Mot de passe incorrect sur l'interface web".format(host=host, user=user, nick=username))
+												self.send("PRIVMSG {} ERREUR: Le mot de passe est incorrect (Tentative #{})".format(sender, self.auth[username]["fail"][user+"@"+host]))
+										else:
+											self.send("PRIVMSG {} ERREUR: {} n'est pas enregistré.".format(sender, username))
+									else:
+										self.send("PRIVMSG {} ERREUR: Vous devez entrer un nickname et un mot de passe".format(sender))
 
 								#islogged <nick>
 								elif args[3].lower() == "islogged":
