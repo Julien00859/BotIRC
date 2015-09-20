@@ -79,6 +79,7 @@ class server(Thread):
 				self.send("SAMode {} +o {}".format(channel, self.config["name"]))
 
 		self.running = True
+		self.time = time.time()
 		while self.running:
 			rlist, wlist, xlist = select([self.server], [], [], 0.1)
 			if rlist:
@@ -97,6 +98,7 @@ class server(Thread):
 						#Ping
 						if len(args) >= 1 and args[0] == "PING":
 							self.send("PONG " + args[1])
+							self.time = time.time()
 
 						#PrivMSG
 						elif len(args) >= 4 and args[1] == "PRIVMSG":
@@ -252,19 +254,13 @@ class server(Thread):
 
 							#PublicMessage
 							else:
-								#Message commençant par le nom de notre bot
-								if args[3].lower().count(self.config["name"].lower()):
-									self.sendToIA(args[2], " ".join(args[4:len(args)]))
-
-								for arg in args[3:len(args)]:
-									match = self.url_regex.search(arg) if self.url_regex.search(arg) else self.ip_regex.search(arg)
-									if match:
-										arg = match.group(0) if match.group(0).startswith("http") else "http://" + match.group(0)
-										try:
-											self.send("PRIVMSG {} {} [{}]".format(args[2], BeautifulSoup(urllib.request.urlopen(arg).read(), "html.parser").title.getText().replace("\n",""), arg))
-										except:
-											pass
-
+								match = self.url_regex.search(arg) if self.url_regex.search(arg) else self.ip_regex.search(arg)
+								if match:
+									arg = match.group(0) if match.group(0).startswith("http") else "http://" + match.group(0)
+									try:
+										self.send("PRIVMSG {} {} [{}]".format(args[2], BeautifulSoup(urllib.request.urlopen(arg).read(), "html.parser").title.getText().replace("\n",""), arg))
+									except:
+										pass
 
 						#Join
 						elif len(args) >= 3 and args[1] == "JOIN" and line[1:line.find("!")] != self.config["name"]:
@@ -297,6 +293,10 @@ class server(Thread):
 						elif len(args) >= 2 and args[1] == "QUIT":
 							if line[1:line.find("!")] in self.users:
 								del self.users[line[1:line.find("!")]]
+
+			if time.time() > self.time + 60:
+				self.send("PONG 127.0.0.1")
+				print("Errr")
 
 	def save(self):
 		with open("auth.json","w") as file:
