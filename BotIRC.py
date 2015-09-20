@@ -61,48 +61,45 @@ class server(Thread):
 
 	def login(self, username, password):
 		if username in self.auth:
-			if len(args) >= 5:
-				if self.auth[username]["password"] == sha256(args[4].encode()).hexdigest():
-					if username in self.users:
-						self.users[username]["Authentificated"] = True
-					else:
-						self.users[username] = {"Authentificated":True, "channels":[]}
-
-					self.send("PRIVMSG {} Vous êtes maintenant connecté".format(username))
-					if "fail" in self.auth[username]:
-						for user in self.auth[username]["fail"]:
-							self.send("PRIVMSG {} {} a tenté de se connecter {} fois sur votre compte".format(username, user, self.auth[username]["fail"][user]))
-						del self.auth[username]["fail"]
-					for channel in self.config["channels"]:
-						if channel not in self.auth[username]["channels"]:
-							self.auth[username]["channels"][channel] = "+v"
-						self.send("MODE {} {} {}".format(channel, self.auth[username]["channels"][channel], username))
-					return True
+			if self.auth[username]["password"] == sha256(password.encode()).hexdigest():
+				if username in self.users:
+					self.users[username]["Authentificated"] = True
 				else:
-					user = args[0][args[0].find("!")+1:args[0].find("@")]
-					host = args[0][args[0].find("@")+1:]
+					self.users[username] = {"Authentificated":True, "channels":[]}
 
-					if not "fail" in self.auth[username]:
-						self.auth[username]["fail"] = {}
-						self.auth[username]["fail"][user+"@"+host] = 1
-					else:
-						if user+"@"+host in self.auth[username]["fail"]:
-							self.auth[username]["fail"][user+"@"+host] += 1
-						else:
-							self.auth[username]["fail"][user+"@"+host] = 1
-
-						if host != "localhost" and host != "127.0.0.1":
-							if len(self.config["auth_fail"]) > self.auth[username]["fail"][user+"@"+host]:
-								if self.config["auth_fail"][self.auth[username]["fail"][user+"@"+host]-2]:
-									self.send(self.config["auth_fail"][self.auth[username]["fail"][user+"@"+host]].format(host=host, user=user, nick=username))
-							else:
-								if self.config["auth_fail"][len(self.config["auth_fail"])-1]:
-									self.send(self.config["auth_fail"][len(self.config["auth_fail"])-1].format(host=host, user=user, nick=username))
-						elif user == "webchat":
-							self.send("KILL {nick} Mot de passe incorrect sur l'interface web".format(host=host, user=user, nick=username))
-					self.send("PRIVMSG {} ERREUR: Le mot de passe est incorrect (Tentative #{})".format(username, self.auth[username]["fail"][user+"@"+host]))
+				self.send("PRIVMSG {} Vous êtes maintenant connecté".format(username))
+				if "fail" in self.auth[username]:
+					for user in self.auth[username]["fail"]:
+						self.send("PRIVMSG {} {} a tenté de se connecter {} fois sur votre compte".format(username, user, self.auth[username]["fail"][user]))
+					del self.auth[username]["fail"]
+				for channel in self.config["channels"]:
+					if channel not in self.auth[username]["channels"]:
+						self.auth[username]["channels"][channel] = "+v"
+					self.send("MODE {} {} {}".format(channel, self.auth[username]["channels"][channel], username))
+				return True
 			else:
-				self.send("PRIVMSG {} ERREUR: Vous devez entrer un mot de passe".format(username))
+				user = args[0][args[0].find("!")+1:args[0].find("@")]
+				host = args[0][args[0].find("@")+1:]
+
+				if not "fail" in self.auth[username]:
+					self.auth[username]["fail"] = {}
+					self.auth[username]["fail"][user+"@"+host] = 1
+				else:
+					if user+"@"+host in self.auth[username]["fail"]:
+						self.auth[username]["fail"][user+"@"+host] += 1
+					else:
+						self.auth[username]["fail"][user+"@"+host] = 1
+
+					if host != "localhost" and host != "127.0.0.1":
+						if len(self.config["auth_fail"]) > self.auth[username]["fail"][user+"@"+host]:
+							if self.config["auth_fail"][self.auth[username]["fail"][user+"@"+host]-2]:
+								self.send(self.config["auth_fail"][self.auth[username]["fail"][user+"@"+host]].format(host=host, user=user, nick=username))
+						else:
+							if self.config["auth_fail"][len(self.config["auth_fail"])-1]:
+								self.send(self.config["auth_fail"][len(self.config["auth_fail"])-1].format(host=host, user=user, nick=username))
+					elif user == "webchat":
+						self.send("KILL {nick} Mot de passe incorrect sur l'interface web".format(host=host, user=user, nick=username))
+				self.send("PRIVMSG {} ERREUR: Le mot de passe est incorrect (Tentative #{})".format(username, self.auth[username]["fail"][user+"@"+host]))
 		else:
 			self.send("PRIVMSG {} ERRER: Vous n'est pas encore enregistré. Merci de vous enregistrer via la commande /msg {} register votre_mot_de_passe".format(username, self.config["name"]))
 		return False
@@ -179,19 +176,27 @@ class server(Thread):
 										else:
 											self.send("PRIVMSG {} ERREUR: Vous devez entrer un mot de passe".format(sender))
 									else:
-										self.send("PRIVMSG {} ERRER: Vous êtes déjà enregistré. Merci de vous connecter via la commande /msg {} login votre_mot_de_passe".format(sender, self.config["name"]))
+										self.send("PRIVMSG {} ERREUR: Vous êtes déjà enregistré. Merci de vous connecter via la commande /msg {} login votre_mot_de_passe".format(sender, self.config["name"]))
 
 								#Login <password>
 								elif args[3].lower() == "login":
 									self.log(" ".join(args[0:4]))
-									self.login(sender, args[4])
+									if len(args) >= 5:
+										self.login(sender, args[4])
+									else:
+										self.send("PRIVMSG {} ERREUR: Veillez préciser un mot de passe".format(sender))
+
 
 								#ghost <nick> <password>
 								elif args[3].casefold() == "ghost":
 									self.log(" ".join(args[0:5]))
-									if self.login(args[4], args[5]):
-										self.send("KILL", args[4], "Ghost")
-										self.send("SANick", sender, args[4])
+									if len(args) >= 6:
+										if self.login(args[4], args[5]):
+											self.send("KILL", args[4], "Ghost")
+											self.send("SANick", sender, args[4])
+									else:
+										self.send("PRIVMSG {} ERREUR: Veillez préciser un nickname et un mot de passe".format(sender))
+
 
 								#islogged <nick>
 								elif args[3].lower() == "islogged":
