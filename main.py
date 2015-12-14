@@ -16,6 +16,8 @@ config = json.load(open("config.json","r"))
 skype = Skype4Py.Skype()
 skype.Attach()
 convo = skype.FindChatUsingBlob(config[u"SkypeBlob"])
+historique = convo.RecentMessages[-1].Id
+offset = 1
 
 socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 socket.connect((config[u"host"] , config[u"port"]))
@@ -50,5 +52,12 @@ while True:
 					channel = args[2]
 					if channel == "#Dev":
 						convo.SendMessage("%s: %s" % (sender, " ".join(args[3:len(args)])[1:]))
-
+						offset = offset + 1
+	# Suite
+	if convo.RecentMessages[-1].Id != historique:
+		for msg in convo.RecentMessages[map(lambda msg: msg.Id, convo.RecentMessages).index(historique) + offset:len(convo.RecentMessages)]:
+			send(socket, "PRIVMSG %s :%s" % ("#Dev", msg.Body))
+		historique = convo.RecentMessages[-1].Id
+		offset = 1
+						
 socket.close()
