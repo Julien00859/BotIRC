@@ -1,0 +1,9 @@
+{
+	"host":"192.168.0.2",
+	"port":6667,
+	"nickname":"MrRobot",
+	"channels":[
+		"#Dev"
+	],
+	"sleepTime":0.5
+}
