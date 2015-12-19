@@ -4,7 +4,7 @@ Un bot IRC écrit en python fournissant une gestion de plugin ainsi qu'une API c
 
 ## Fonctionnalités
 
-- Gestion événementielles de plugins
+- Gestion événementielle de plugins
 
 - API (envoie de commande, de message, liste d'utilisateur (avec leur permission) par salon)
 
