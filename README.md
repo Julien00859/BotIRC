@@ -10,7 +10,7 @@ Un bot IRC écrit en python fournissant une gestion de plugin ainsi qu'une API c
 
 ## Plugins proposés
 
-### Essentials:
+### Essentials
 
 * Arrête le bot
 * Ping-pong
