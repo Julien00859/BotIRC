@@ -5,6 +5,7 @@ from threading import Thread
 import os.path
 from os import getcwd
 import random
+import json
 
 API = None  # Variable global
 
@@ -25,13 +26,12 @@ def on_public_message(channel, sender, message):
         API.send_message(channel, "Pong!")
 
     elif message == "!quote":
-        API.send_message(channel, random.choice(
-            open(os.path.join(getcwd(), "plugins", "essentials", "eliot.txt"), "r").readlines()))
+        API.send_message(channel, random.choice(json.load(open(os.path.join(getcwd(), "plugins", "essentials.json"), "r"))["quotes"]))
 
 
 def on_private_message(sender, message):
     args = message.split(" ")
-    user_perm = API.get_user_permissions(sender)
+    user_perm = API.get_user_mode(sender)
 
     if user_perm[0] == "OP":
         if len(args) >= 2 and args[1] == "stop":
