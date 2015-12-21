@@ -104,9 +104,11 @@ class Server:
 
     def kick(self, args: list) -> None:
         # :Julien008!Julien@host-85-201-171-39.dynamic.voo.be KICK #Dev Julien00859 :Julien008
-        #                                                          ^^^^ ^^^^^^^^^^^
+        #  ^^^^^^^^^                                               ^^^^ ^^^^^^^^^^^
         if len(args) >= 4:
+            sender = args[0][1:args[0].find("!")]  # Julien008
             self.API.remove_user(args[2], args[3])
+            self.plugins.kick(sender, args[2], args[3])
 
     def part(self, args: list) -> None:
         if len(args) >= 3:
@@ -114,6 +116,7 @@ class Server:
             #  ^^^^^^^^^^^                                               ^^^^
             sender = args[0][1:args[0].find("!")]  # Julien00859
             self.API.remove_user(args[2], sender)
+            self.plugins.part(args[2], sender)
 
     def mode(self, args: list) -> None:
         # :Julien008!Julien@host-85-201-171-39.dynamic.voo.be MODE #Dev +h Julien00859
@@ -131,6 +134,7 @@ class Server:
             sender = args[0][1:args[0].find("!")]  # Julien00859
             for channel in self.API.get_channels():
                 self.API.remove_user(channel, sender)
+                self.plugins.quit(sender)
 
 if __name__ == "__main__":
     Server()

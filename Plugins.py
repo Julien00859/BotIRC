@@ -80,6 +80,36 @@ class Plugins:
             if "on_mode" in plugin.__dict__:
                 plugin.on_mode(sender, channel, mode, user)
 
+    def quit(self, sender: str) -> None:
+        """
+        Exécute la fonction "on_kick(sender)" de chaque plugin
+        :param sender: Le nom de l'utilisateur qui a quitté le réseau
+        """
+        for plugin in self.plugins:
+            if "on_quit" in plugin.__dict__:
+                plugin.on_quit(sender)
+
+    def part(self, channel: str, sender: str) -> None:
+        """
+        Exécute la fonction "on_part(sender, channel)" de chaque plugin
+        :param channel: Le nom du salon que l'utilisateur a quitté
+        :param sender: Le nom de l'utilisateur qui a quitté le salon
+        """
+        for plugin in self.plugins:
+            if "on_part" in plugin.__dict__:
+                plugin.on_part(channel, sender)
+
+    def kick(self, sender: str, channel: str, user: str) -> None:
+        """
+        Exécute la fonction "on_kick(sender, channel, user)" de chaque plugin
+        :param sender: Le nom de l'utilisateur qui a exécuté la commande /kick
+        :param channel: Le nom du salon où l'utilisateur a été kické
+        :param user: Le nom de l'utilisateur kické
+        """
+        for plugin in self.plugins:
+            if "on_kick" in plugin.__dict__:
+                plugin.on_kick(sender, channel, user)
+
     def stop(self) -> None:
         """
         Exécute la fonction "on_stop()" de chaque plugin
