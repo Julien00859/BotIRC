@@ -31,6 +31,9 @@ def on_load(api):
 
 
 def on_stop():
+    for user in auth.keys():
+        if "authenticated" in auth[user]:
+            del auth[user]["authenticated"]
     json.dump(auth, open(join(getcwd(), "plugins", "auth.json"), "w"), indent="\t", sort_keys=True)
 
 
@@ -91,11 +94,10 @@ def on_private_message(sender, message):
 
 
 def on_join(channel, user):
-    print("on_join event !")
     if user not in auth or "password" not in auth[user]:
         # L'utilisateur est absent de la mapping ou ne s'est pas encore enregistré
-        auth[user] = {}
-        auth[user]["channels"][channel] = API.get_user_permissions(user, channel)[0]
+        auth[user] = {"channels":{}}
+        auth[user]["channels"][channel] = API.get_user_mode(user, channel)[0]
         auth[user]["authenticated"] = False
         API.send_message(user, "[AUTH] The channel {} is protected by authentication, to register your nickname, type \"/msg {} auth register a_password_here\"".format(channel, API.get_bot_nick()))
 
@@ -129,3 +131,8 @@ def on_mode(sender, channel, mode, user):
         for user in API.get_users(channel):
             if API.get_user_mode(user, channel)[0] == "OP":
                 API.send_message(user, "[AUTH] User mode is frozen for {0}, to change its internal mode please type: \"/msg {1} auth setmode {2} {3} {0}\"".format(user, API.get_bot_nick(), channel, mode))
+
+
+def on_quit(sender):
+    if sender in auth and not auth[sender]["authenticated"]:
+        auth[sender]["authenticated"] = False
