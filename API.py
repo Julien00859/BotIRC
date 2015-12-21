@@ -25,6 +25,7 @@ class API:
         Envoie une commande sur le server IRC
         :param cmd: La commande à envoyer
         """
+        print(cmd)
         self._server.socket.send("{}\r\n".format(cmd).encode())
 
     def send_message(self, channel: str, message: str) -> None:
