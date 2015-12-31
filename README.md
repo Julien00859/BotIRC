@@ -28,3 +28,7 @@ Un bot IRC écrit en python fournissant une gestion de plugin ainsi qu'une API c
 * Gestion dynamique des comptes non-enregistré
 * Gel des comptes enregistré
 * Administration des comptes par des OP
+
+### Skype
+
+* Se lie à une convo P2P Skype et se sert du bot comme tunnel avec IRC
