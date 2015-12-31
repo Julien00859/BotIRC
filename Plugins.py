@@ -26,6 +26,7 @@ class Plugins:
         for plugin in self.plugins:
             if "on_load" in plugin.__dict__:
                 plugin.on_load(self.API)
+                print(str(plugin) + " loaded successfully")
 
     def loop(self) -> None:
         """Exécute la fonction "on_loop()" de chaque plugin """
