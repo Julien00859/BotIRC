@@ -1,9 +1,10 @@
 {
-	"host":"192.168.0.2",
+	"host":"127.0.0.1",
 	"port":6667,
 	"nickname":"MrRobot",
 	"channels":[
-		"#Dev"
+		"#Dev",
+		"#Skype"
 	],
 	"sleepTime":0.5,
 	"oper_password":"secret"
