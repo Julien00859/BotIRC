@@ -16,7 +16,7 @@ def period_thread(interval, function):
 def period_sched(interval, function):
     # Schedule la prochaine fonction et après le temps imparti exécute la fonction
     s = scheduler()
-    s.enter(interval, 1, period_thread)
+    s.enter(interval, 1, period_thread, argument=(interval, function))
     s.run()
     function()
 
@@ -53,7 +53,7 @@ def on_load(api):
 
 def quote():
     soup = BeautifulSoup(urllib.request.urlopen("http://www.softwarequotes.com/").read(), "html.parser")
-    qotd = soup.find(id="QuoteoftheDay").getText().replace("\n", "")
-    author = soup.find(id="Span1").getText().replace("\n", "")[2:]
+    qotd = soup.find(id="QuoteoftheDay").getText().replace("\n", "").strip()
+    author = soup.find(id="Span1").getText().replace("\n", "")[2:].strip()
     for channel in API.get_channels():
         API.send_command("TOPIC {} {} ~{}".format(channel, qotd, author))
