@@ -1,4 +1,4 @@
-#!/usr/bin/python3.5
+#!/usr/local/bin/python3.5
 
 from select import select
 import json
