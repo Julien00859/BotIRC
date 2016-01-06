@@ -1,5 +1,5 @@
 ﻿import json
-
+import logging
 
 class API:
     def __init__(self, server):
@@ -25,7 +25,7 @@ class API:
         Envoie une commande sur le server IRC
         :param cmd: La commande à envoyer
         """
-        print(cmd)
+        logging.info(cmd)
         self._server.socket.send("{}\r\n".format(cmd).encode())
 
     def send_message(self, channel: str, message: str) -> None:
@@ -42,7 +42,8 @@ class API:
         :param channel: le nom du salon où envoyer la reqête
         """
         self.send_command("NAMES " + channel)
-        names = self._server.socket.recv(1024).decode().split("\r\n")
+        names = self._server.socket.recv(1024).decode().splitlines()
+        logging.info(names)
         for n in range(len(names)):
             if "End of /NAMES list." in names[n]:
                 # :127.0.0.1 353 Julien008 = #Dev :@Julien008 MrRobot
@@ -96,9 +97,13 @@ class API:
             if user in self._channels[channel]:
                 del self._channels[channel][user]
             else:
-                raise KeyError("User \"{}\" not found".format(user))
+                err = KeyError("User \"{}\" not found".format(user))
+                logging.exception(err)
+                raise err
         else:
-            raise KeyError("Channel \"{}\" not found".format(channel))
+            err = KeyError("Channel \"{}\" not found".format(channel))
+            logging.exception(err)
+            raise err
 
     def get_user_mode(self, user: str, channel: str=None) -> tuple:
         """
@@ -128,7 +133,9 @@ class API:
             return perm
 
         else:
-            raise KeyError("Channel \"{}\" not found".format(channel))
+            err = KeyError("Channel \"{}\" not found".format(channel))
+            logging.exception(err)
+            raise err
 
     def set_user_mode(self, channel: str, mode: str, user: str) -> tuple:
         """
@@ -152,11 +159,17 @@ class API:
                     self.send_command("MODE {} +{} {}".format(channel, modes[mode][0], user))
                     self._channels[channel][user]["mode"] = (mode, modes[mode][1])
                 else:
-                    raise ValueError("Invalid mode {} (must be OP, HALF-OP, VOICE or USER)".format(mode))
+                    err = ValueError("Invalid mode {} (must be OP, HALF-OP, VOICE or USER)".format(mode))
+                    logging.exception(err)
+                    raise err
             else:
-                raise KeyError("User \"{}\" not found".format(user))
+                err = KeyError("User \"{}\" not found".format(user))
+                logging.exception(err)
+                raise err
         else:
-            raise KeyError("Channel \"{}\" not found".format(channel))
+            err = KeyError("Channel \"{}\" not found".format(channel))
+            logging.exception(err)
+            raise err
 
     def get_users(self, channel: str = None):
         """
@@ -173,4 +186,6 @@ class API:
             return [user for user in self._channels[channel]]
 
         else:
-            raise KeyError("Channel \"{}\" not found".format(channel))
+            err = KeyError("Channel \"{}\" not found".format(channel))
+            logging.exception(err)
+            raise err

@@ -1,5 +1,6 @@
 from importlib import import_module
 from os import getcwd
+import logging
 import os.path
 
 
@@ -19,6 +20,7 @@ class Plugins:
         self.plugins = []
         for plugin in os.listdir(plugins_path):
             if plugin.endswith(".py") and plugin != "__init__.py":
+                logging.info("Importing " + plugin)
                 self.plugins.append(import_module("plugins." + plugin[:plugin.find(".")]))
 
     def load(self) -> None:
@@ -26,12 +28,13 @@ class Plugins:
         for plugin in self.plugins:
             if "on_load" in plugin.__dict__:
                 plugin.on_load(self.API)
-                print(str(plugin) + " loaded successfully")
+                logging.info(str(plugin) + " loaded")
 
     def loop(self) -> None:
         """Exécute la fonction "on_loop()" de chaque plugin """
         for plugin in self.plugins:
             if "on_loop" in plugin.__dict__:
+                logging.debug("loop event on " + str(plugin))
                 plugin.on_loop()
 
     def private_message(self, sender: str, message: str) -> None:
@@ -46,6 +49,7 @@ class Plugins:
             plugin_name = plugin.__name__[plugin.__name__.find(".")+1:].casefold()
             message_plugin = message.split(" ")[0].casefold()
             if plugin_name == message_plugin and "on_private_message" in plugin.__dict__:
+                logging.debug("private_message event on " + str(plugin))
                 plugin.on_private_message(sender, message)
                 break
 
@@ -58,6 +62,7 @@ class Plugins:
         """
         for plugin in self.plugins:
             if "on_public_message" in plugin.__dict__:
+                logging.debug("public_message event on " + str(plugin))
                 plugin.on_public_message(channel, sender, message)
 
     def join(self, channel: str, user: str) -> None:
@@ -68,6 +73,7 @@ class Plugins:
         """
         for plugin in self.plugins:
             if "on_join" in plugin.__dict__:
+                logging.debug("join event on " + str(plugin))
                 plugin.on_join(channel, user)
 
     def mode(self, sender: str, channel: str, mode: str, user: str) -> None:
@@ -79,6 +85,7 @@ class Plugins:
         """
         for plugin in self.plugins:
             if "on_mode" in plugin.__dict__:
+                logging.debug("mode event on " + str(plugin))
                 plugin.on_mode(sender, channel, mode, user)
 
     def quit(self, sender: str) -> None:
@@ -88,6 +95,7 @@ class Plugins:
         """
         for plugin in self.plugins:
             if "on_quit" in plugin.__dict__:
+                logging.debug("quit event on " + str(plugin))
                 plugin.on_quit(sender)
 
     def part(self, channel: str, sender: str) -> None:
@@ -98,6 +106,7 @@ class Plugins:
         """
         for plugin in self.plugins:
             if "on_part" in plugin.__dict__:
+                logging.debug("part event on " + str(plugin))
                 plugin.on_part(channel, sender)
 
     def kick(self, sender: str, channel: str, user: str) -> None:
@@ -109,13 +118,14 @@ class Plugins:
         """
         for plugin in self.plugins:
             if "on_kick" in plugin.__dict__:
+                logging.debug("kick event on " + str(plugin))
                 plugin.on_kick(sender, channel, user)
 
     def stop(self) -> None:
         """
         Exécute la fonction "on_stop()" de chaque plugin
         """
-        print("Stopping...")
         for plugin in self.plugins:
             if "on_stop" in plugin.__dict__:
                 plugin.on_stop()
+                logging.info(str(plugin) + " stopped")

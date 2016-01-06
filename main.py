@@ -2,6 +2,7 @@
 
 from select import select
 import json
+import logging
 import socket
 from API import API
 from Plugins import Plugins
@@ -9,10 +10,7 @@ from Plugins import Plugins
 
 class Server:
     def __init__(self):
-
-        self.API = API(self)
-        self.plugins = Plugins(self.API)
-
+        # Chargement de la configuration
         with open("config.json", "r") as json_data:
             config = json.load(json_data)
             host = config["host"]
@@ -20,7 +18,22 @@ class Server:
             sleep_time = config["sleepTime"]
             nick = config["nickname"]
             oper_password = config["oper_password"]
+            log_file = config["log_file"]
+            log_level = config["log_level"]
 
+        logging.basicConfig(filename=log_file,
+                            filemode="a",
+                            level=getattr(logging, log_level.upper()),
+                            format='%(asctime)s [%(levelname)s | %(filename)s > %(funcName)s] %(message)s',
+                            datefmt='%x %X')
+
+        logging.info("=== Starting bot ===")
+        logging.info("Loading API")
+        self.API = API(self)
+        logging.info("Loading plugins")
+        self.plugins = Plugins(self.API)
+
+        logging.info("Connecting to the IRC network")
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.connect((host, port))
         self.API.send_command("NICK {}".format(nick))
@@ -28,17 +41,26 @@ class Server:
         while True:
             motd = self.socket.recv(1024).decode()
             if len(motd) > 0:
-                print(motd)
+                for line in motd.splitlines():
+                    logging.info(line)
             if "Current Global Users" in motd:
                 break
 
         self.API.send_command("OPER Bot {}".format(oper_password))
-        print(self.socket.recv(1024).decode())
+        for line in self.socket.recv(1024).decode().splitlines():
+            logging.info(line)
 
         for channel in self.API.get_channels():
             self.API.send_command("JOIN " + channel)
+            for line in self.socket.recv(1024).decode().splitlines():
+                logging.info(line)
             self.API.send_command("SAMode {} +o {}".format(channel, nick))
+            for line in self.socket.recv(1024).decode().splitlines():
+                logging.info(line)
             self.API.send_names_query(channel)
+
+        logging.info("Connected !")
+        logging.info("Loading plugins")
 
         self.plugins.load()
 
@@ -51,6 +73,8 @@ class Server:
             "MODE": self.mode,
             "QUIT": self.quit
         }
+
+        logging.info("Starting main-loop")
         self.running = True
         while self.running:
             rlist, wlist, xlist = select([self.socket], [], [], sleep_time)
@@ -58,10 +82,10 @@ class Server:
                 try:
                     msg = self.socket.recv(1024).decode()
                 except Exception as ex:
-                    print(ex)
+                    logging.exception(ex)
                 else:
-                    for line in msg.split("\r\n"):
-                        print(line)
+                    for line in msg.splitlines():
+                        logging.info(line)
                         args = line.split(" ")
                         if len(args) >= 1 and args[0] in commands:
                             commands[args[0]](args)

@@ -1,5 +1,5 @@
 {
-	"host":"127.0.0.1",
+	"host":"localhost",
 	"port":6667,
 	"nickname":"MrRobot",
 	"channels":[
@@ -7,5 +7,7 @@
 		"#Skype"
 	],
 	"sleepTime":0.5,
-	"oper_password":"secret"
+	"oper_password":"secret",
+	"log_file":"log",
+    "log_level":"info"
 }
