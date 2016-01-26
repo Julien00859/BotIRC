@@ -48,7 +48,7 @@ class API:
             if "End of /NAMES list." in names[n]:
                 # :127.0.0.1 353 Julien008 = #Dev :@Julien008 MrRobot
                 #                                 [@Julien008,MrRobot]
-                for user in " ".join(names[n-1].split(" ")[5:])[1:].split(" "):
+                for user in " ".join(names[n - 1].split(" ")[5:])[1:].split(" "):
                     self.add_update_user(channel, user)
 
     def get_bot_nick(self) -> str:

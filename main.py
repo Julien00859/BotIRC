@@ -1,6 +1,7 @@
 #!/usr/local/bin/python3.5
 
 from select import select
+from sys import stderr
 import json
 import logging
 import socket
@@ -26,6 +27,7 @@ class Server:
                             level=getattr(logging, log_level.upper()),
                             format='%(asctime)s [%(levelname)s | %(filename)s > %(funcName)s] %(message)s',
                             datefmt='%x %X')
+        stderr = open(log_file, "a")
 
         logging.info("=== Starting bot ===")
         logging.info("Loading API")
@@ -75,6 +77,7 @@ class Server:
         }
 
         logging.info("Starting main-loop")
+        self.API.send_command("PONG :127.0.0.1")
         self.running = True
         while self.running:
             rlist, wlist, xlist = select([self.socket], [], [], sleep_time)
@@ -127,7 +130,7 @@ class Server:
             self.plugins.join(channel, sender)
 
     def kick(self, args: list) -> None:
-        # :Julien008!Julien@host-85-201-171-39.dynamic.voo.be KICK #Dev Julien00859 :Julien008
+        # :Julien008!Julien@host-85-201-171-39.dynamic.voo.be KICK #Dev Julien00859 :You have been kicked
         #  ^^^^^^^^^                                               ^^^^ ^^^^^^^^^^^
         if len(args) >= 4:
             sender = args[0][1:args[0].find("!")]  # Julien008
